@@ -20,9 +20,6 @@ jobs:
         run: npm ci
 
       - name: Deploy to Railway
-        uses: railwayapp/railway-action@v1
+        uses: railwayapp/actions-deploy@v1
         with:
           railwayToken: ${{ secrets.RAILWAY_TOKEN }}
-          # Optional: set these if you want to target a specific project/service
-          # projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
-          # serviceId: ${{ secrets.RAILWAY_SERVICE_ID }}
