@@ -28,13 +28,13 @@ export default function PartnersDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-slate-800 rounded p-4">
           <h4 className="text-white font-semibold mb-2">Add / Edit Partner</h4>
-          <input placeholder="Name" className="w-full mb-2 p-2 bg-neutral-900" value={draft.name||''} onChange={(e)=>setDraft({...draft,name:e.target.value})} />
-          <select className="w-full mb-2 p-2 bg-neutral-900" value={draft.type||'channel'} onChange={(e)=>setDraft({...draft,type:e.target.value})}>
+          <input placeholder="Name" className="w-full mb-2 p-2 bg-gray-900" value={draft.name||''} onChange={(e)=>setDraft({...draft,name:e.target.value})} />
+          <select className="w-full mb-2 p-2 bg-gray-900" value={draft.type||'channel'} onChange={(e)=>setDraft({...draft,type:e.target.value})}>
             <option value="channel">Channel Partner</option>
             <option value="developer">Developer</option>
           </select>
-          <input placeholder="Default commission %" className="w-full mb-2 p-2 bg-neutral-900" value={draft.defaultCommission||''} onChange={(e)=>setDraft({...draft,defaultCommission: Number(e.target.value)})} />
-          <input placeholder="Capacity" className="w-full mb-2 p-2 bg-neutral-900" value={draft.capacity||''} onChange={(e)=>setDraft({...draft,capacity: Number(e.target.value)})} />
+          <input placeholder="Default commission %" className="w-full mb-2 p-2 bg-gray-900" value={draft.defaultCommission||''} onChange={(e)=>setDraft({...draft,defaultCommission: Number(e.target.value)})} />
+          <input placeholder="Capacity" className="w-full mb-2 p-2 bg-gray-900" value={draft.capacity||''} onChange={(e)=>setDraft({...draft,capacity: Number(e.target.value)})} />
           <div className="flex gap-2">
             <button onClick={save} className="px-4 py-2 bg-cyan-600 rounded text-white">Save</button>
             <button onClick={()=>setDraft({})} className="px-4 py-2 bg-slate-700 rounded text-gray-200">Reset</button>
@@ -45,7 +45,7 @@ export default function PartnersDashboard() {
           <h4 className="text-white font-semibold mb-2">Existing Partners</h4>
           <div className="space-y-2 max-h-96 overflow-auto text-sm text-gray-300">
             {partners.length === 0 ? <p className="text-gray-500">No partners yet</p> : partners.map(p => (
-              <div key={p.id} className="p-3 bg-neutral-900 rounded flex justify-between items-center">
+              <div key={p.id} className="p-3 bg-gray-900 rounded flex justify-between items-center">
                 <div>
                   <p className="font-semibold">{p.name}</p>
                   <p className="text-xs">Type: {p.type} — Commission: {p.defaultCommission||0}% — Capacity: {p.capacity||'N/A'}</p>

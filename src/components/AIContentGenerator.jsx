@@ -154,7 +154,7 @@ Dubai Properties Team`
                 )}
               </div>
 
-              <div className="min-h-64 bg-neutral-900 rounded-lg p-4 border border-slate-700">
+              <div className="min-h-64 bg-gray-900 rounded-lg p-4 border border-slate-700">
                 {loading ? (
                   <div className="h-64 flex items-center justify-center">
                     <div className="text-center">
@@ -193,7 +193,7 @@ Dubai Properties Team`
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
             <h3 className="font-semibold text-white mb-4">📱 Social Media Template</h3>
-            <div className="bg-neutral-900 rounded-lg p-4 text-gray-300 text-sm space-y-2">
+            <div className="bg-gray-900 rounded-lg p-4 text-gray-300 text-sm space-y-2">
               <p>🏢 Featured Property ✨</p>
               <p>Location: Premium Dubai Address</p>
               <p>ROI: 8-15% | Appreciation: 10-15%/year</p>
@@ -203,7 +203,7 @@ Dubai Properties Team`
 
           <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
             <h3 className="font-semibold text-white mb-4">📧 Email Template</h3>
-            <div className="bg-neutral-900 rounded-lg p-4 text-gray-300 text-sm space-y-2">
+            <div className="bg-gray-900 rounded-lg p-4 text-gray-300 text-sm space-y-2">
               <p>Subject: Exclusive Property Match</p>
               <p>Hi [Name], we found a property that matches your criteria...</p>
               <p>[Details] [CTA Button]</p>

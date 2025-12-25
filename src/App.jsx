@@ -27,7 +27,7 @@ function App() {
 
   return (
     <ProjectProvider>
-      <div className="min-h-screen bg-neutral-900">
+      <div className="min-h-screen bg-gray-900">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         {/* Schedule weekly refresh check */}
         {

@@ -344,7 +344,7 @@ export default function GoogleSheetIntegration({ selectedProjects }) {
             </h2>
 
             <div className="space-y-4 mb-6">
-              <div className="p-4 bg-neutral-900 rounded-lg border border-slate-700">
+              <div className="p-4 bg-gray-900 rounded-lg border border-slate-700">
                 <h3 className="text-sm font-semibold text-white mb-3">Lead Summary</h3>
                 <div className="space-y-2 text-sm text-gray-300">
                   <div>
@@ -362,7 +362,7 @@ export default function GoogleSheetIntegration({ selectedProjects }) {
                 </div>
               </div>
 
-              <div className="p-4 bg-neutral-900 rounded-lg border border-slate-700">
+              <div className="p-4 bg-gray-900 rounded-lg border border-slate-700">
                 <h3 className="text-sm font-semibold text-white mb-3">
                   Selected Properties ({selectedProjects.length})
                 </h3>
@@ -425,7 +425,7 @@ export default function GoogleSheetIntegration({ selectedProjects }) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-neutral-900 border-b border-slate-700">
+                  <tr className="bg-gray-900 border-b border-slate-700">
                     <th className="px-4 py-2 text-left text-cyan-400">Property</th>
                     <th className="px-4 py-2 text-right text-cyan-400">Price</th>
                     <th className="px-4 py-2 text-right text-cyan-400">ROI</th>

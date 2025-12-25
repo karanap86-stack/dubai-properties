@@ -220,7 +220,7 @@ export default function LeadsDashboard() {
 
                   {/* Lead Details (Expanded) */}
                   {expandedLead === lead.id && (
-                    <div className="border-t border-slate-700 p-6 bg-neutral-900/50 space-y-4">
+                    <div className="border-t border-slate-700 p-6 bg-gray-900/50 space-y-4">
                       {/* Properties Interested */}
                       <div>
                         <h4 className="text-sm font-semibold text-gray-300 mb-2">Properties Interested ({lead.selectedProjects.length})</h4>

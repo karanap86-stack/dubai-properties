@@ -45,7 +45,7 @@ export default function PropertyComparison({ selectedProjects }) {
                 { label: 'Units Available', key: 'units', format: (v) => v },
                 { label: 'Completion', key: 'completionDate', format: (v) => v }
               ].map((row, i) => (
-                <tr key={i} className={`border-b border-slate-700 ${i % 2 === 0 ? 'bg-neutral-900/50' : 'bg-slate-800/50'}`}>
+                <tr key={i} className={`border-b border-slate-700 ${i % 2 === 0 ? 'bg-gray-900/50' : 'bg-slate-800/50'}`}>
                   <td className="px-4 py-3 font-semibold text-gray-300">{row.label}</td>
                   {selectedProjects.map((project) => (
                     <td
