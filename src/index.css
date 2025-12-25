@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@import "tailwindcss";
+@source "./index.html";
+@source "./App.jsx";
+@source "./main.jsx";
+@source "./components/**/*.{js,jsx,ts,tsx}";
 
 * {
   margin: 0;
