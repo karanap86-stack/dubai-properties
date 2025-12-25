@@ -55,21 +55,21 @@ Dubai Properties Team`
   ]
 
   return (
-    <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="pt-32 pb-24 px-4 sm:px-8 lg:px-12">
+      <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 flex items-center gap-2">
-            <Sparkles size={32} className="text-cyan-400" />
-            AI Content Generator
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 flex items-center gap-3 tracking-tight">
+            <Sparkles size={40} className="text-cyan-400" />
+            Built-in AI Bot
           </h1>
-          <p className="text-gray-400">Generate marketing content and creatives for your properties</p>
+          <p className="text-lg text-gray-300 mb-2">Generate unique, luxury write-ups and creative language for your properties.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Settings Panel */}
           <div className="lg:col-span-1">
-            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 sticky top-24">
-              <h3 className="font-semibold text-white mb-4">Generation Settings</h3>
+            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 sticky top-32 shadow-lg">
+              <h3 className="font-bold text-white mb-6 text-xl">AI Bot Settings</h3>
 
               {/* Content Type Selection */}
               <div className="mb-6">

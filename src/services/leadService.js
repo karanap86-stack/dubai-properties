@@ -1,3 +1,49 @@
+// Send WhatsApp birthday wishes to clients whose birthday is today
+export const sendBirthdayWishesToClients = async () => {
+  const leads = getAllLeads();
+  const today = new Date();
+  const todayStr = `${today.getMonth() + 1}`.padStart(2, '0') + '-' + `${today.getDate()}`.padStart(2, '0');
+  let count = 0;
+  for (const lead of leads) {
+    const birthdate = lead.customerInfo?.birthdate; // Expecting 'YYYY-MM-DD'
+    const phone = lead.customerInfo?.phone;
+    if (birthdate && phone) {
+      const [, month, day] = birthdate.split('-');
+      if (`${month}-${day}` === todayStr) {
+        const message = `Happy Birthday, ${lead.customerInfo.name}! 🎉\nWishing you a year filled with happiness, success, and beautiful moments.\n\nWarm wishes,\nKaran Ashutosh Poptani`;
+        try {
+          await fetch('/api/send-whatsapp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phoneNumber: phone, message, isBirthday: true })
+          });
+          count++;
+        } catch (e) {
+          console.error('Failed to send birthday wish to', phone, e);
+        }
+      }
+    }
+  }
+  return { success: true, count };
+}
+// Send festive WhatsApp wishes to all clients
+export const sendFestiveWishesToAllClients = async (occasion = "Festive Season") => {
+  const leads = getAllLeads();
+  const uniquePhones = Array.from(new Set(leads.map(l => l.customerInfo?.phone).filter(Boolean)));
+  const message = `Wishing you and your family a wonderful ${occasion}! May your home be filled with joy, success, and new beginnings.\n\nWarm regards,\nKaran Ashutosh Poptani`;
+  for (const phone of uniquePhones) {
+    try {
+      await fetch('/api/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phone, message, isFestive: true })
+      });
+    } catch (e) {
+      console.error('Failed to send festive wish to', phone, e);
+    }
+  }
+  return { success: true, count: uniquePhones.length };
+}
 // Lead Management & Notification Service
 // Handles lead tracking, duplicate detection, notifications and analytics hooks
 

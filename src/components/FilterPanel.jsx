@@ -95,10 +95,10 @@ export default function FilterPanel({ filters, setFilters }) {
   )
 
   return (
-    <div className="bg-slate-800/40 border border-slate-700 rounded-lg mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden backdrop-blur">
-      <div className="px-4 sm:px-6 py-4">
-        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+    <div className="bg-slate-800/40 border border-slate-700 rounded-2xl mx-4 sm:mx-8 lg:mx-12 mb-10 overflow-visible backdrop-blur shadow-lg">
+      <div className="px-6 sm:px-10 py-6">
+        <h2 className="text-2xl font-extrabold text-white mb-6 flex items-center gap-3">
+          <span className="w-3 h-3 bg-cyan-400 rounded-full"></span>
           Filter Properties
         </h2>
 

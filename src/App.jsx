@@ -1,20 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import Navbar from './components/Navbar'
-import HeroSection from './components/HeroSection'
-import FilterPanel from './components/FilterPanel'
-import ProjectShowcase from './components/ProjectShowcase'
-import PropertyComparison from './components/PropertyComparison'
-import AIContentGenerator from './components/AIContentGenerator'
-import GoogleSheetIntegration from './components/GoogleSheetIntegration'
-import LeadsDashboard from './components/LeadsDashboard'
-import SocialIntegration from './components/SocialIntegration'
-import AnalyticsDashboard from './components/AnalyticsDashboard'
-import PartnersDashboard from './components/PartnersDashboard'
-import { shouldRefreshNow, performRefresh, getRefreshConfig, saveRefreshConfig } from './services/refreshService'
-import { ProjectProvider } from './context/ProjectContext'
+
+
+import AboutSection from './components/AboutSection'
+import { sendBirthdayWishesToClients } from './services/leadService'
 
 function App() {
-  const [activeTab, setActiveTab] = useState('discover') // discover, compare, ai, export, leads
+  const [activeTab, setActiveTab] = useState('discover')
   const [selectedProjects, setSelectedProjects] = useState([])
   const [filters, setFilters] = useState({
     budget: { min: 0, max: 5000000 },
@@ -24,6 +14,23 @@ function App() {
     bedrooms: [],
     amenities: [],
   })
+  const [adminMode, setAdminMode] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('admin') === '1' || localStorage.getItem('adminMode') === 'true') {
+      setAdminMode(true)
+    }
+    // Run birthday wishes on app load and then daily
+    const runBirthdayWishes = async () => {
+      try {
+        await sendBirthdayWishesToClients();
+      } catch (e) { console.error('Birthday wishes failed', e); }
+    }
+    runBirthdayWishes();
+    const bdayInterval = setInterval(runBirthdayWishes, 1000 * 60 * 60 * 24);
+    return () => clearInterval(bdayInterval);
+  }, [])
 
   return (
     <ProjectProvider>
@@ -70,22 +77,25 @@ function App() {
           <AIContentGenerator />
         )}
 
-        {activeTab === 'export' && (
+        {adminMode && activeTab === 'export' && (
           <GoogleSheetIntegration selectedProjects={selectedProjects} />
         )}
 
-        {activeTab === 'leads' && (
+        {adminMode && activeTab === 'leads' && (
           <LeadsDashboard />
         )}
-        {activeTab === 'analytics' && (
+        {adminMode && activeTab === 'analytics' && (
           <AnalyticsDashboard />
         )}
-        {activeTab === 'partners' && (
+        {adminMode && activeTab === 'partners' && (
           <PartnersDashboard />
         )}
-        {activeTab === 'social' && (
+        {adminMode && activeTab === 'social' && (
           <SocialIntegration />
         )}
+
+        {/* About Section always visible at bottom */}
+        <AboutSection />
       </div>
     </ProjectProvider>
   )
