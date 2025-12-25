@@ -1,4 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
+// Utility to get validation errors from window (set by developerService.js)
+function useDevDataErrors() {
+  const [errors, setErrors] = useState([]);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setErrors(window.__DEV_DATA_ERRORS__ || []);
+      const interval = setInterval(() => {
+        setErrors(window.__DEV_DATA_ERRORS__ || []);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, []);
+  return errors;
+}
+  const devDataErrors = useDevDataErrors();
+      {devDataErrors.length > 0 && (
+        <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          <h3 className="font-semibold mb-2">Developer Data Validation Errors</h3>
+          <ul className="list-disc ml-6 text-sm">
+            {devDataErrors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+          </ul>
+          <div className="text-xs mt-2">Please fix these errors in your data files or via admin onboarding.</div>
+        </div>
+      )}
 // Simple bar chart for dashboard analytics
 function BarChart({ label, value, max, color }) {
   const percent = max > 0 ? Math.round((value / max) * 100) : 0;

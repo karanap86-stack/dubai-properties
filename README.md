@@ -1,3 +1,17 @@
+# 🚀 How to Update and Deploy
+
+1. Make your code changes locally.
+2. Commit your changes:
+	git add .
+	git commit -m "Describe your changes"
+3. Push to GitHub:
+	git push
+
+Netlify will automatically deploy your latest code. No manual deployment needed!
+
+For environment variables, use the Netlify dashboard (Site Settings > Environment Variables).
+
+Check Netlify for deployment status and logs if needed.
 # Dubai Properties - AI-Powered Real Estate Platform
 
 An advanced, mobile-friendly real estate lead generation platform with AI capabilities for Dubai and Abu Dhabi properties. Built with React, Tailwind CSS, and modern web technologies.

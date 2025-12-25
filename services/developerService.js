@@ -2,12 +2,48 @@ import fs from 'fs'
 import path from 'path'
 let indiaDevelopers = require('../data/indiaDevelopers.json')
 
+// --- Automated Data Validation ---
+function validateDeveloperData(developers) {
+  const errors = []
+  developers.forEach((dev, i) => {
+    if (!dev.id || !dev.name) errors.push(`Developer at index ${i} missing id or name`)
+    if (!Array.isArray(dev.cities) || dev.cities.length === 0) errors.push(`Developer ${dev.name} missing cities`)
+    if (!Array.isArray(dev.states) || dev.states.length === 0) errors.push(`Developer ${dev.name} missing states`)
+    if (!Array.isArray(dev.projects) || dev.projects.length === 0) errors.push(`Developer ${dev.name} missing projects`)
+    dev.projects?.forEach((proj, j) => {
+      if (!proj.id || !proj.name) errors.push(`Project at dev ${dev.name} index ${j} missing id or name`)
+      if (!proj.region) errors.push(`Project ${proj.name} at dev ${dev.name} missing region`)
+    })
+  })
+  return errors
+}
+
+function reportValidationErrors(errors) {
+  if (errors.length > 0) {
+    console.error('[Data Validation] Developer/project data errors:', errors)
+    if (typeof window !== 'undefined') {
+      window.__DEV_DATA_ERRORS__ = errors
+    }
+  } else {
+    if (typeof window !== 'undefined') {
+      window.__DEV_DATA_ERRORS__ = []
+    }
+  }
+}
+
+// Validate on load
+const devValidationErrors = validateDeveloperData(indiaDevelopers)
+reportValidationErrors(devValidationErrors)
+
 // Auto-refresh India developers data weekly
 setInterval(() => {
   try {
     const data = fs.readFileSync(path.join(__dirname, '../data/indiaDevelopers.json'), 'utf-8')
     indiaDevelopers = JSON.parse(data)
     console.log('[Auto-Refresh] India developers data reloaded')
+    // Validate after refresh
+    const errors = validateDeveloperData(indiaDevelopers)
+    reportValidationErrors(errors)
   } catch (e) { console.error('Failed to refresh indiaDevelopers.json', e) }
 }, 1000 * 60 * 60 * 24 * 7)
 // Utility: Get all developers by state/city (dynamic, scalable)
