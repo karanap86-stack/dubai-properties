@@ -1,0 +1,159 @@
+
+@import "tailwindcss";
+@source "./index.html";
+@source "./App.jsx";
+@source "./main.jsx";
+@source "./components/**/*.{js,jsx,ts,tsx}";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #06b6d4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0891b2;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Global animations */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #f3e8ff 100%);
+  color: #232946;
+  font-family: 'Playfair Display', serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.01em;
+}
+
+/* Button animations */
+button {
+  @apply transition-all duration-300 bg-white text-indigo-700 font-semibold shadow-sm rounded-lg;
+  border: 1px solid #e0e7ff;
+  padding: 0.5rem 1.5rem;
+  margin: 0.25rem 0;
+}
+
+button:active {
+  @apply scale-95;
+  background: #ede9fe;
+}
+
+/* Input animations */
+input:focus,
+textarea:focus,
+select:focus {
+  @apply ring-2 ring-cyan-500/50;
+}
+
+/* Card hover effect */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-lg hover:shadow-indigo-200/40 hover:-translate-y-1;
+  background: rgba(255,255,255,0.7);
+  border-radius: 1rem;
+  box-shadow: 0 2px 16px 0 rgba(80, 80, 180, 0.08);
+}
+
+/* Gradient text animation */
+.gradient-text {
+  background: linear-gradient(90deg, #7f9cf5 0%, #a78bfa 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+  h1 {
+    @apply text-2xl;
+  }
+  h2 {
+    @apply text-xl;
+  }
+  h3 {
+    @apply text-lg;
+  }
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+}

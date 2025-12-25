@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dubai Properties</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/main.jsx"></script>
+    <script>
+      // Anti-copy/anti-inspect logic
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('keydown', function(e) {
+        // Disable F12, Ctrl+Shift+I/J/C/U, Ctrl+U, Ctrl+S, Ctrl+P
+        if (
+          e.keyCode === 123 || // F12
+          (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) ||
+          (e.ctrlKey && ['U','S','P'].includes(e.key.toUpperCase()))
+        ) {
+          e.preventDefault();
+        }
+      });
+      document.addEventListener('selectstart', e => e.preventDefault());
+      document.addEventListener('copy', e => e.preventDefault());
+      document.addEventListener('cut', e => e.preventDefault());
+      document.addEventListener('dragstart', e => e.preventDefault());
+    </script>
+  </body>
+</html>

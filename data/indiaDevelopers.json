@@ -1,0 +1,8 @@
+[
+  { "name": "Prestige Group", "states": ["Karnataka", "Maharashtra", "Tamil Nadu"], "cities": ["Bangalore", "Mumbai", "Chennai"] },
+  { "name": "Godrej Properties", "states": ["Maharashtra", "Delhi", "Gujarat"], "cities": ["Mumbai", "Delhi", "Ahmedabad"] },
+  { "name": "DLF", "states": ["Delhi", "Haryana", "Uttar Pradesh"], "cities": ["Delhi", "Gurgaon", "Noida"] },
+  { "name": "Sobha Limited", "states": ["Karnataka", "Kerala", "Tamil Nadu"], "cities": ["Bangalore", "Kochi", "Chennai"] },
+  { "name": "Brigade Group", "states": ["Karnataka", "Telangana", "Tamil Nadu"], "cities": ["Bangalore", "Hyderabad", "Chennai"] }
+  // ...add all major and regional developers
+]
