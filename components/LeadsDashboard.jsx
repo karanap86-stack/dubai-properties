@@ -3,9 +3,9 @@ import { getAllLeads, getLeadStatistics, updateLeadTemperature, addLeadNote, upd
 import { scheduleNoContactNotification, cancelNoContactNotification } from '../services/notificationService'
 import partnerService from '../services/partnerService'
 import { getAllProjects } from '../services/projectService'
+import propertyTypesByRegion from '../data/propertyTypesByRegion.json';
 import { Flame, Zap, Snowflake, Download, Trash2, Mail, MessageCircle, ChevronDown, Filter } from 'lucide-react'
 
-export default function LeadsDashboard() {
   const [leads, setLeads] = useState([])
   const [statistics, setStatistics] = useState(null)
   const [filterType, setFilterType] = useState('all') // all, hot, warm, cold, duplicates
@@ -17,6 +17,22 @@ export default function LeadsDashboard() {
   const [appointmentDrafts, setAppointmentDrafts] = useState({})
   const [partnerDrafts, setPartnerDrafts] = useState({})
   const [partners, setPartners] = useState([])
+
+  // Get user region from localStorage (set by onboarding modal)
+  let userPrefs = null;
+  try {
+    userPrefs = JSON.parse(localStorage.getItem('userPrefs'));
+  } catch (e) { userPrefs = null; }
+  const region = userPrefs?.region || 'dubai';
+  const regionGroup = (() => {
+    if (region === 'dubai' || region === 'abu_dhabi') return 'uae';
+    if (region === 'india') return 'india';
+    // Add more as you expand
+    return 'uae';
+  })();
+  const propertyTypes = Object.entries(propertyTypesByRegion[regionGroup].categories)
+    .flatMap(([cat, arr]) => arr.map(opt => ({ ...opt, group: cat })))
+    .map(opt => ({ ...opt, label: `${opt.label} (${opt.group.charAt(0).toUpperCase() + opt.group.slice(1)})` }));
 
   useEffect(() => {
     loadLeads()
@@ -302,9 +318,15 @@ export default function LeadsDashboard() {
                               onChange={(e) => setDiscussionDrafts(prev => ({ ...prev, [`add_project_${lead.id}`]: e.target.value }))}
                             >
                               <option value="">Select project to add</option>
-                              {allProjects.filter(p => !lead.selectedProjects.find(sp => sp.id === p.id)).map(p => (
-                                <option key={p.id} value={p.id}>{p.name} — {p.location} — {(p.price/1000000).toFixed(1)}M AED</option>
-                              ))}
+                              {allProjects
+                                .filter(p => !lead.selectedProjects.find(sp => sp.id === p.id))
+                                .filter(p => !p.type || propertyTypes.some(pt => pt.value === p.type))
+                                .map(p => {
+                                  const typeLabel = propertyTypes.find(pt => pt.value === p.type)?.label || p.type || 'N/A';
+                                  return (
+                                    <option key={p.id} value={p.id}>{p.name} — {typeLabel} — {p.location} — {(p.price/1000000).toFixed(1)}M AED</option>
+                                  );
+                                })}
                             </select>
                             <button
                               onClick={() => {

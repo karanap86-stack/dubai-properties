@@ -1,0 +1,155 @@
+{
+  "uae": {
+    "label": "UAE",
+    "regions": ["dubai", "abu_dhabi"],
+    "categories": {
+      "residential": [
+        {"value": "apartment", "label": "Apartment/Flat"},
+        {"value": "villa", "label": "Villa"},
+        {"value": "townhouse", "label": "Townhouse"},
+        {"value": "penthouse", "label": "Penthouse"},
+        {"value": "duplex", "label": "Duplex"},
+        {"value": "studio", "label": "Studio"},
+        {"value": "loft", "label": "Loft"},
+        {"value": "serviced_apartment", "label": "Serviced Apartment"},
+        {"value": "compound_villa", "label": "Compound Villa"},
+        {"value": "mansion", "label": "Mansion"},
+        {"value": "bungalow", "label": "Bungalow"}
+      ],
+      "commercial": [
+        {"value": "office", "label": "Office"},
+        {"value": "retail_shop", "label": "Retail Shop"},
+        {"value": "showroom", "label": "Showroom"},
+        {"value": "warehouse", "label": "Warehouse"},
+        {"value": "commercial_building", "label": "Commercial Building"},
+        {"value": "business_center", "label": "Business Center"},
+        {"value": "kiosk", "label": "Kiosk"},
+        {"value": "clinic", "label": "Clinic"},
+        {"value": "restaurant_cafe", "label": "Restaurant/Café"}
+      ],
+      "industrial": [
+        {"value": "warehouse", "label": "Warehouse"},
+        {"value": "factory", "label": "Factory"},
+        {"value": "labor_camp", "label": "Labor Camp"},
+        {"value": "industrial_land", "label": "Industrial Land/Plot"},
+        {"value": "cold_storage", "label": "Cold Storage"}
+      ]
+    }
+  },
+  "india": {
+    "label": "India",
+    "categories": {
+      "residential": [
+        {"value": "apartment", "label": "Apartment/Flat"},
+        {"value": "independent_house", "label": "Independent House"},
+        {"value": "villa", "label": "Villa"},
+        {"value": "penthouse", "label": "Penthouse"},
+        {"value": "duplex", "label": "Duplex"},
+        {"value": "studio", "label": "Studio Apartment"},
+        {"value": "builder_floor", "label": "Builder Floor"},
+        {"value": "row_house", "label": "Row House"},
+        {"value": "farmhouse", "label": "Farmhouse"},
+        {"value": "chawl", "label": "Chawl"},
+        {"value": "mansion", "label": "Mansion"},
+        {"value": "serviced_apartment", "label": "Serviced Apartment"},
+        {"value": "plot", "label": "Plot/Land"}
+      ],
+      "commercial": [
+        {"value": "office", "label": "Office Space"},
+        {"value": "retail_shop", "label": "Retail Shop"},
+        {"value": "showroom", "label": "Showroom"},
+        {"value": "commercial_building", "label": "Commercial Building"},
+        {"value": "co_working", "label": "Co-working Space"},
+        {"value": "mall_unit", "label": "Shopping Mall/Unit"},
+        {"value": "restaurant_cafe", "label": "Restaurant/Café"},
+        {"value": "clinic", "label": "Clinic"},
+        {"value": "godown", "label": "Godown"},
+        {"value": "kiosk", "label": "Kiosk"}
+      ],
+      "industrial": [
+        {"value": "warehouse", "label": "Warehouse"},
+        {"value": "factory", "label": "Factory"},
+        {"value": "industrial_shed", "label": "Industrial Shed"},
+        {"value": "godown", "label": "Godown"},
+        {"value": "industrial_land", "label": "Industrial Land/Plot"},
+        {"value": "cold_storage", "label": "Cold Storage"}
+      ]
+    }
+  },
+  "usa": {
+    "label": "USA",
+    "categories": {
+      "residential": [
+        {"value": "apartment", "label": "Apartment"},
+        {"value": "house", "label": "House"},
+        {"value": "condo", "label": "Condominium (Condo)"},
+        {"value": "townhouse", "label": "Townhouse"},
+        {"value": "penthouse", "label": "Penthouse"},
+        {"value": "duplex", "label": "Duplex"},
+        {"value": "studio", "label": "Studio"},
+        {"value": "loft", "label": "Loft"},
+        {"value": "bungalow", "label": "Bungalow"},
+        {"value": "mansion", "label": "Mansion"},
+        {"value": "serviced_apartment", "label": "Serviced Apartment"}
+      ],
+      "commercial": [
+        {"value": "office", "label": "Office"},
+        {"value": "retail_shop", "label": "Retail Shop"},
+        {"value": "showroom", "label": "Showroom"},
+        {"value": "commercial_building", "label": "Commercial Building"},
+        {"value": "co_working", "label": "Co-working Space"},
+        {"value": "mall_unit", "label": "Shopping Mall/Unit"},
+        {"value": "restaurant_cafe", "label": "Restaurant/Café"},
+        {"value": "clinic", "label": "Clinic"},
+        {"value": "warehouse", "label": "Warehouse"},
+        {"value": "kiosk", "label": "Kiosk"}
+      ],
+      "industrial": [
+        {"value": "warehouse", "label": "Warehouse"},
+        {"value": "factory", "label": "Factory"},
+        {"value": "industrial_land", "label": "Industrial Land/Plot"},
+        {"value": "industrial_park", "label": "Industrial Park"},
+        {"value": "cold_storage", "label": "Cold Storage"},
+        {"value": "distribution_center", "label": "Distribution Center"}
+      ]
+    }
+  },
+  "europe": {
+    "label": "Europe",
+    "categories": {
+      "residential": [
+        {"value": "apartment", "label": "Apartment/Flat"},
+        {"value": "house", "label": "House"},
+        {"value": "villa", "label": "Villa"},
+        {"value": "townhouse", "label": "Townhouse"},
+        {"value": "penthouse", "label": "Penthouse"},
+        {"value": "duplex", "label": "Duplex"},
+        {"value": "studio", "label": "Studio"},
+        {"value": "loft", "label": "Loft"},
+        {"value": "bungalow", "label": "Bungalow"},
+        {"value": "mansion", "label": "Mansion"},
+        {"value": "serviced_apartment", "label": "Serviced Apartment"}
+      ],
+      "commercial": [
+        {"value": "office", "label": "Office"},
+        {"value": "retail_shop", "label": "Retail Shop"},
+        {"value": "showroom", "label": "Showroom"},
+        {"value": "commercial_building", "label": "Commercial Building"},
+        {"value": "co_working", "label": "Co-working Space"},
+        {"value": "mall_unit", "label": "Shopping Mall/Unit"},
+        {"value": "restaurant_cafe", "label": "Restaurant/Café"},
+        {"value": "clinic", "label": "Clinic"},
+        {"value": "warehouse", "label": "Warehouse"},
+        {"value": "kiosk", "label": "Kiosk"}
+      ],
+      "industrial": [
+        {"value": "warehouse", "label": "Warehouse"},
+        {"value": "factory", "label": "Factory"},
+        {"value": "industrial_land", "label": "Industrial Land/Plot"},
+        {"value": "industrial_park", "label": "Industrial Park"},
+        {"value": "cold_storage", "label": "Cold Storage"},
+        {"value": "distribution_center", "label": "Distribution Center"}
+      ]
+    }
+  }
+}

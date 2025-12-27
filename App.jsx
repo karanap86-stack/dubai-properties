@@ -5,6 +5,7 @@ import AIChatbot from './components/AIChatbot'
 import AdminFeedbackDashboard from './components/AdminFeedbackDashboard'
 import CountryPerformanceDashboard from './components/CountryPerformanceDashboard'
 import MarketSelectionModal from './components/MarketSelectionModal'
+import UserOnboardingModal from './components/UserOnboardingModal'
 import { sendBirthdayWishesToClients } from './services/leadService'
 import { scheduleNoContactNotification, cancelNoContactNotification } from './services/notificationService'
 import { ensureAsanaAuth } from './services/asanaService'
@@ -28,9 +29,16 @@ function App() {
   // Market selection
   const [market, setMarket] = useState(() => localStorage.getItem('selectedMarket') || '')
   const [showMarketModal, setShowMarketModal] = useState(!market)
+  // Onboarding modal
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('onboardingComplete'))
+  const [userPrefs, setUserPrefs] = useState(() => {
+    const saved = localStorage.getItem('userPrefs');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   useEffect(() => {
     if (!market) setShowMarketModal(true)
+    if (!localStorage.getItem('onboardingComplete')) setShowOnboarding(true)
     const params = new URLSearchParams(window.location.search)
     if (params.get('admin') === '1' || localStorage.getItem('adminMode') === 'true') {
       setAdminMode(true)
@@ -112,27 +120,19 @@ function App() {
   return (
     <ProjectProvider>
       <div className="min-h-screen bg-gray-900">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        {/* Schedule weekly refresh check */}
-        {
-          (() => {
-            React.useEffect(() => {
-              const runIfDue = async () => {
-                try {
-                  if (shouldRefreshNow()) {
-                    await performRefresh()
-                  }
-                } catch (e) { console.error('Auto-refresh failed', e) }
-              }
-              // Check immediately on load
-              runIfDue()
-              // Then check once per day
-              const id = setInterval(runIfDue, 1000 * 60 * 60 * 24)
-              return () => clearInterval(id)
-            }, [])
-            return null
-          })()
-        }
+        {showOnboarding && (
+          <UserOnboardingModal
+            onComplete={({ region, propertyType, language }) => {
+              setShowOnboarding(false);
+              setUserPrefs({ region, propertyType, language });
+              localStorage.setItem('userPrefs', JSON.stringify({ region, propertyType, language }));
+              localStorage.setItem('onboardingComplete', '1');
+              // Optionally set market and filters
+              setMarket(region);
+              setFilters(f => ({ ...f, propertyType: [propertyType] }));
+            }}
+          />
+        )}
         
         // Engagement handlers: pass setEngaged to children as needed
         const handleEngagement = () => setEngaged(true)

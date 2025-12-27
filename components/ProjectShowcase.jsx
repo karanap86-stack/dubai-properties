@@ -1,7 +1,9 @@
 
+
 import React, { useContext } from 'react'
 import { Heart, MapPin, Home, TrendingUp, Check } from 'lucide-react'
 import { ProjectContext } from '../context/ProjectContext'
+import propertyTypesByRegion from '../data/propertyTypesByRegion.json';
 
 
 
@@ -11,16 +13,35 @@ export default function ProjectShowcase({ filters, selectedProjects, setSelected
   const [bestSellingProjects, setBestSellingProjects] = React.useState({})
   const [lastBestSellerRefresh, setLastBestSellerRefresh] = React.useState(null)
 
+  // Get user region from localStorage (set by onboarding modal)
+  let userPrefs = null;
+  try {
+    userPrefs = JSON.parse(localStorage.getItem('userPrefs'));
+  } catch (e) { userPrefs = null; }
+  const region = userPrefs?.region || 'dubai';
+
+  // Map region to group in propertyTypesByRegion
+  const regionGroup = (() => {
+    if (region === 'dubai' || region === 'abu_dhabi') return 'uae';
+    if (region === 'india') return 'india';
+    // Add more as you expand
+    return 'uae';
+  })();
+
+  // Property types for this region
+  const propertyTypes = Object.entries(propertyTypesByRegion[regionGroup].categories)
+    .flatMap(([cat, arr]) => arr.map(opt => ({ ...opt, group: cat })))
+    .map(opt => ({ ...opt, label: `${opt.label} (${opt.group.charAt(0).toUpperCase() + opt.group.slice(1)})` }));
+
   // Helper: Find best-selling project in area by type (by units)
-  const getBestSellingProjectByType = (area, projectList, type) => {
+  const getBestSellingProjectByType = (area, projectList, typeValue) => {
     const areaProjects = projectList.filter(p =>
       p.location.toLowerCase().includes(area.toLowerCase()) &&
-      ((type === 'Residential' && (!p.type || p.type === '')) ||
-        (type !== 'Residential' && p.type === type))
-    )
-    if (areaProjects.length === 0) return null
-    return areaProjects.reduce((best, curr) => (curr.units > (best?.units || 0) ? curr : best), null)
-  }
+      (p.type === typeValue)
+    );
+    if (areaProjects.length === 0) return null;
+    return areaProjects.reduce((best, curr) => (curr.units > (best?.units || 0) ? curr : best), null);
+  };
 
   React.useEffect(() => {
     // Exclude sold out and resale properties if such status exists in future
@@ -48,21 +69,19 @@ export default function ProjectShowcase({ filters, selectedProjects, setSelected
       })
       area = Object.keys(areaCounts).reduce((a, b) => areaCounts[a] > areaCounts[b] ? a : b, '')
     }
-    // Property types to show best sellers for
-    const propertyTypes = [
-      { key: 'Residential', label: 'Residential' },
-      { key: 'Office Space', label: 'Office Space' },
-      { key: 'Retail Space', label: 'Retail Space' },
-      { key: 'Industrial Land', label: 'Industrial Land' },
-      { key: 'Commercial Project', label: 'Commercial Project' }
-    ]
+    // Property types to show best sellers for (region-specific)
+    // Only show up to 5 most relevant types for this region
+    const bestSellerTypes = propertyTypes.slice(0, 5);
     // Refresh best sellers monthly (simulate with timestamp)
     const now = new Date()
     if (!lastBestSellerRefresh || (now - lastBestSellerRefresh) > 1000 * 60 * 60 * 24 * 28) {
       setLastBestSellerRefresh(now)
       const bests = {}
-      propertyTypes.forEach(pt => {
-        bests[pt.key] = area ? getBestSellingProjectByType(area, projects, pt.key) : null
+      bestSellerTypes.forEach(pt => {
+        bests[pt.value] = area ? getBestSellingProjectByType(area, projects, pt.value) : null
+      });
+      setBestSellingProjects(bests)
+    }
 
       return (
         <div className="px-4 sm:px-8 lg:px-12 pb-24">
@@ -76,12 +95,12 @@ export default function ProjectShowcase({ filters, selectedProjects, setSelected
 
             {/* Best-Selling Projects by Property Type for Area */}
             <div className="mb-12">
-              {['Residential', 'Office Space', 'Retail Space', 'Industrial Land', 'Commercial Project'].map(type => {
-                const best = bestSellingProjects[type];
+              {bestSellerTypes.map(pt => {
+                const best = bestSellingProjects[pt.value];
                 if (!best) return null;
                 return (
-                  <div key={type} className="mb-8">
-                    <h3 className="text-xl font-bold mb-4" style={{ color: '#00e676' }}>Best-Selling {type} in {best.location}</h3>
+                  <div key={pt.value} className="mb-8">
+                    <h3 className="text-xl font-bold mb-4" style={{ color: '#00e676' }}>Best-Selling {pt.label} in {best.location}</h3>
                     <div className="rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ background: 'rgba(10,46,109,0.07)' }}>
                       {/* Image Section */}
                       <div className="relative h-44 sm:h-56 overflow-hidden group cursor-pointer">

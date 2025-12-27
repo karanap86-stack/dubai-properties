@@ -45,10 +45,26 @@ function BarChart({ label, value, max, color }) {
 }
 import { getAllDevelopers, getProjectsByDeveloper } from '../services/developerService';
 import { getAllProviders } from '../services/serviceProviderService';
+import propertyTypesByRegion from '../data/propertyTypesByRegion.json';
 
-export default function AdminAutomationMenu() {
   const [developers] = useState(getAllDevelopers());
   const [providers] = useState(getAllProviders());
+
+  // Get user region from localStorage (set by onboarding modal)
+  let userPrefs = null;
+  try {
+    userPrefs = JSON.parse(localStorage.getItem('userPrefs'));
+  } catch (e) { userPrefs = null; }
+  const region = userPrefs?.region || 'dubai';
+  const regionGroup = (() => {
+    if (region === 'dubai' || region === 'abu_dhabi') return 'uae';
+    if (region === 'india') return 'india';
+    // Add more as you expand
+    return 'uae';
+  })();
+  const propertyTypes = Object.entries(propertyTypesByRegion[regionGroup].categories)
+    .flatMap(([cat, arr]) => arr.map(opt => ({ ...opt, group: cat })))
+    .map(opt => ({ ...opt, label: `${opt.label} (${opt.group.charAt(0).toUpperCase() + opt.group.slice(1)})` }));
 
 
   // Analytics: counts
@@ -77,9 +93,16 @@ export default function AdminAutomationMenu() {
             <li key={dev.id}>
               {dev.name} ({dev.region || 'N/A'})
               <ul className="list-circle ml-4 text-sm text-gray-700">
-                {dev.projects && dev.projects.length > 0 ? dev.projects.map(proj => (
-                  <li key={proj.id}>{proj.name} ({proj.region})</li>
-                )) : <li>No projects</li>}
+                {dev.projects && dev.projects.length > 0 ? dev.projects.map(proj => {
+                  // Show property type label if available
+                  const typeLabel = propertyTypes.find(pt => pt.value === proj.type)?.label || proj.type || 'N/A';
+                  return (
+                    <li key={proj.id}>
+                      {proj.name} ({proj.region})
+                      <span className="ml-2 text-xs text-cyan-700">{typeLabel}</span>
+                    </li>
+                  );
+                }) : <li>No projects</li>}
               </ul>
             </li>
           ))}

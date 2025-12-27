@@ -1,9 +1,120 @@
+// --- ADVANCED LEAD STATUS FLOWS (PENDING APPROVAL, KYC, PAYMENT, NEGOTIATION) ---
+import { MASTER_DISPOSITIONS } from './dispositionMapping';
+
+/**
+ * Set or update the status of a lead (pending approval, kyc_pending, payment_pending, negotiation, etc.)
+ * @param {string} leadId
+ * @param {string} status - Must be in MASTER_DISPOSITIONS
+ * @param {object} [meta] - Optional metadata (e.g., who/when/why)
+ * @returns {object}
+ */
+export function setLeadStatus(leadId, status, meta = {}) {
+  if (!MASTER_DISPOSITIONS.includes(status)) throw new Error('Invalid status');
+  const leads = getAllLeads();
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) throw new Error('Lead not found');
+  lead.status = status;
+  lead.statusHistory = lead.statusHistory || [];
+  lead.statusHistory.push({ status, changedAt: new Date().toISOString(), ...meta });
+  lead.lastUpdated = new Date().toISOString();
+  localStorage.setItem(LEAD_STORAGE_KEY, JSON.stringify(leads));
+  // Optionally, trigger automations/notifications for key statuses
+  if (status === 'kyc_pending') {
+    // Notify client to upload KYC docs
+    // notificationService.notifyClientKycPending(leadId);
+  } else if (status === 'payment_pending') {
+    // Notify client to complete payment
+    // notificationService.notifyClientPaymentPending(leadId);
+  } else if (status === 'negotiation') {
+    // Notify agent/developer for negotiation
+    // notificationService.notifyNegotiationStarted(leadId);
+  } else if (status === 'pending_approval') {
+    // Notify approver/admin
+    // notificationService.notifyPendingApproval(leadId);
+  }
+  return { success: true, status };
+}
+
+/**
+ * Progress a lead to the next logical status in the sales journey
+ * @param {string} leadId
+ * @returns {object}
+ */
+export function progressLeadStatus(leadId) {
+  const leads = getAllLeads();
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) throw new Error('Lead not found');
+  const current = lead.status;
+  const idx = MASTER_DISPOSITIONS.indexOf(current);
+  if (idx === -1 || idx === MASTER_DISPOSITIONS.length - 1) return { success: false, error: 'Already at final status' };
+  const nextStatus = MASTER_DISPOSITIONS[idx + 1];
+  return setLeadStatus(leadId, nextStatus, { autoProgressed: true });
+}
+
+/**
+ * Get the full status history for a lead
+ * @param {string} leadId
+ * @returns {Array}
+ */
+export function getLeadStatusHistory(leadId) {
+  const leads = getAllLeads();
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) throw new Error('Lead not found');
+  return lead.statusHistory || [];
+}
 // --- AUTOMATION TRIGGERS FOR ALL LEADS ---
 // Call this after every lead creation or update
 export async function handleLeadAutomation(leadId) {
   // Auto-share with relevant 3rd-party providers
   await autoShareLeadWithProviders(leadId);
   // Optionally, trigger other automations (e.g., analytics, notifications)
+}
+
+// --- KYC & DOCUMENT UPLOAD LOGIC (AWS S3) ---
+import awsS3Service from './awsS3Service';
+
+/**
+ * Upload a KYC or document file to S3 and link to a lead
+ * @param {string} leadId
+ * @param {Buffer|Uint8Array} fileBuffer
+ * @param {string} filename
+ * @param {string} contentType
+ * @param {string} docType - e.g., 'kyc', 'passport', 'id', 'proof', 'agreement', etc.
+ * @returns {Promise<{success:boolean, url?:string, error?:string}>}
+ */
+export async function uploadLeadDocument(leadId, fileBuffer, filename, contentType, docType) {
+  try {
+    const key = `leads/${leadId}/${docType || 'document'}-${Date.now()}-${filename}`;
+    const uploadResult = await awsS3Service.uploadFile(key, fileBuffer, contentType);
+    // Link document to lead (store S3 URL and metadata)
+    const leads = getAllLeads();
+    const lead = leads.find(l => l.id === leadId);
+    if (!lead) throw new Error('Lead not found');
+    lead.documents = lead.documents || [];
+    lead.documents.push({
+      url: uploadResult.Location,
+      key,
+      filename,
+      contentType,
+      docType,
+      uploadedAt: new Date().toISOString()
+    });
+    localStorage.setItem(LEAD_STORAGE_KEY, JSON.stringify(leads));
+    return { success: true, url: uploadResult.Location };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Get signed download URL for a lead document
+ * @param {string} leadId
+ * @param {string} key
+ * @param {number} expiresIn
+ * @returns {string}
+ */
+export function getLeadDocumentUrl(leadId, key, expiresIn = 3600) {
+  return awsS3Service.getSignedUrl(key, expiresIn);
 }
 
 // --- LOCAL RESOURCE-BASED CRM SYNC LOGIC ---

@@ -1,5 +1,12 @@
+
+import twilio from 'twilio';
+const TWILIO_SID = process.env.TWILIO_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_FROM = process.env.TWILIO_FROM;
+const client = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
+
 // telephonyService.js
-// Scalable telephony integration scaffold for future provider (Twilio, RingCentral, Aircall, etc.)
+// Scalable telephony integration for Twilio (can extend for RingCentral, Aircall, etc.)
 // Handles call initiation, routing, and logging. Add provider-specific logic where marked.
 
 /**
@@ -19,18 +26,17 @@
  * TODO: Replace mock logic below with provider-specific TTS/voice config.
  */
 export async function initiateCall(clientPhone, agentPhone, language, context = {}) {
-  // TODO: Integrate with telephony provider API here
-  // Ensure the selected voice is a premium female neural/AI voice with natural intonation
-  // Example Twilio:
-  // await twilio.calls.create({
-  //   to: clientPhone,
-  //   from: agentPhone,
-  //   twiml: `<Response><Say voice="Polly.Joanna-Neural" language="en-US">Hello, this is ${context.agentName}...</Say></Response>`
-  // })
-  // Example Azure:
-  // await azureTTS.speak({ text, voiceName: 'en-US-JennyNeural', style: 'cheerful', ... })
-  console.log('Initiating call:', { clientPhone, agentPhone, language, context, voice: 'female-neural' })
-  return { success: true, callId: 'mock-call-id' }
+  try {
+    const twiml = `<Response><Say voice="Polly.Joanna-Neural" language="en-US">Hello, this is ${context.agentName || 'your agent'} from ${context.country || 'our company'}. We are calling regarding your inquiry.</Say></Response>`;
+    const call = await client.calls.create({
+      to: clientPhone,
+      from: TWILIO_FROM || agentPhone,
+      twiml
+    });
+    return { success: true, callId: call.sid };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
 }
 
 /**
@@ -41,9 +47,10 @@ export async function initiateCall(clientPhone, agentPhone, language, context = 
  * @returns {Promise<{ agentId: string, agentPhone: string }>}
  */
 export async function routeIncomingCall(clientPhone, country, language) {
-  // TODO: Use agentService to find best agent for country/language
-  // Example: const agent = agentService.findBestAgent(country, language)
-  return { agentId: 'mock-agent', agentPhone: '+10000000000' }
+  // Example: Use agentService to find best agent for country/language
+  // const agent = agentService.findBestAgent(country, language)
+  // For now, return a mock agent
+  return { agentId: 'mock-agent', agentPhone: TWILIO_FROM || '+10000000000' };
 }
 
 /**
@@ -51,8 +58,21 @@ export async function routeIncomingCall(clientPhone, country, language) {
  * @param {object} callDetails - { callId, clientPhone, agentId, agentPhone, language, country, status, duration }
  */
 export function logCall(callDetails) {
-  // TODO: Store call logs in DB or analytics system
-  console.log('Call log:', callDetails)
+  // Store call logs in DB or analytics system (extend as needed)
+  // Example: save to a database or analytics service
+  console.log('Call log:', callDetails);
 }
 
-// Add more functions as needed for IVR, call queuing, etc.
+
+// Placeholder for IVR and call queuing
+export function handleIVR(callId, options) {
+  // Implement IVR logic here (menu navigation, DTMF, etc.)
+  // Example: use Twilio Studio or custom TwiML
+  return { status: 'IVR handling not yet implemented', callId };
+}
+
+export function queueCall(clientPhone, agentPhone, context = {}) {
+  // Implement call queuing logic here
+  // Example: add to a queue, notify agent when available
+  return { status: 'Call queued', clientPhone, agentPhone };
+}

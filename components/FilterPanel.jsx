@@ -1,24 +1,51 @@
 import React from 'react'
 import { ChevronDown, X } from 'lucide-react'
+import propertyTypesByRegion from '../data/propertyTypesByRegion.json';
+
 
 export default function FilterPanel({ filters, setFilters }) {
-  const [expandedFilter, setExpandedFilter] = React.useState(null)
-  const [areaSearch, setAreaSearch] = React.useState('')
+  const [expandedFilter, setExpandedFilter] = React.useState(null);
+  const [areaSearch, setAreaSearch] = React.useState('');
 
-  const areas = ['Downtown Dubai', 'Dubai Marina', 'Palm Jumeirah', 'JBR', 'Arabian Ranches', 'Business Bay', 'Saadiyat Island', 'Al Reef', 'Yas Island', 'Khalifa City']
-  const propertyTypes = [
-    { value: '1', label: '1 Bedroom' },
-    { value: '2', label: '2 Bedroom' },
-    { value: '3', label: '3 Bedroom' },
-    { value: '4', label: '4+ Bedroom' },
-    { value: '5', label: '5+ Bedroom' },
-    { value: 'Office Space', label: 'Office Space' },
-    { value: 'Retail Space', label: 'Retail Space' },
-    { value: 'Industrial Land', label: 'Industrial Land' },
-    { value: 'Commercial Project', label: 'Commercial Project' }
-  ]
-  const developers = ['Emaar Properties', 'Damac Properties', 'Aldar Properties', 'Nakheel', 'Omniyat']
-  const amenities = ['Pool', 'Gym', 'Parking', 'Security', 'Concierge', 'Beach', 'Marina', 'Mall']
+  // Get user region from localStorage (set by onboarding modal)
+  let userPrefs = null;
+  try {
+    userPrefs = JSON.parse(localStorage.getItem('userPrefs'));
+  } catch (e) { userPrefs = null; }
+  const region = userPrefs?.region || 'dubai';
+
+  // Map region to group in propertyTypesByRegion
+  const regionGroup = (() => {
+    if (region === 'dubai' || region === 'abu_dhabi') return 'uae';
+    if (region === 'india') return 'india';
+    // Add more as you expand
+    return 'uae';
+  })();
+
+  // Property types for this region
+  const propertyTypes = Object.entries(propertyTypesByRegion[regionGroup].categories)
+    .flatMap(([cat, arr]) => arr.map(opt => ({ ...opt, group: cat })))
+    .map(opt => ({ ...opt, label: `${opt.label} (${opt.group.charAt(0).toUpperCase() + opt.group.slice(1)})` }));
+
+  // Areas for this region (simple static for now, can be dynamic)
+  const areasByRegion = {
+    dubai: ['Downtown Dubai', 'Dubai Marina', 'Palm Jumeirah', 'JBR', 'Arabian Ranches', 'Business Bay'],
+    abu_dhabi: ['Saadiyat Island', 'Al Reef', 'Yas Island', 'Khalifa City'],
+    india: ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata'],
+    // Add more as needed
+  };
+  const areas = areasByRegion[region] || areasByRegion['dubai'];
+
+  // Developers (could be region-specific, static for now)
+  const developersByRegion = {
+    dubai: ['Emaar Properties', 'Damac Properties', 'Nakheel', 'Omniyat'],
+    abu_dhabi: ['Aldar Properties', 'Imkan', 'Bloom Properties'],
+    india: ['Prestige Group', 'Godrej Properties', 'DLF', 'Sobha Limited', 'Brigade Group'],
+  };
+  const developers = developersByRegion[region] || developersByRegion['dubai'];
+
+  // Amenities (static, can be region-specific)
+  const amenities = ['Pool', 'Gym', 'Parking', 'Security', 'Concierge', 'Beach', 'Marina', 'Mall'];
 
   const handleBudgetChange = (field, value) => {
     setFilters({

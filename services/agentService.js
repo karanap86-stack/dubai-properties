@@ -20,16 +20,30 @@ export function assignTasksToManagers(country, tasks, loadThreshold = 5) {
   ];
 }
 // Utility: Check if agent can interact with clients, developers, and channel partners only
+
+// Only agents with designation 'agent' in a valid department (not admin/manager/AI/tech roles)
 export function canAgentInteractWithClientsOnly(agent) {
-  // Only non-country-manager, non-linkedin_insights, non-international agents
-  return agent && agent.role === 'local';
+  if (!agent) return false;
+  return (
+    agent.designation === 'agent' &&
+    isValidDepartment(agent.department) &&
+    !['ai_agent', 'ai_manager', 'ai_admin', 'ai_master_admin', 'tech_admin', 'tech_user', 'department_admin', 'manager', 'master_admin', 'backup_master_admin'].includes(agent.designation)
+  );
 }
 
 // Utility: Check if agent can post or update content (country manager or linkedin_insights only)
+
+// Only department_admin, manager, or ai_admin/ai_manager/ai_agent in correct department, or LinkedIn Insights Bot
 export function canAgentPostOrUpdate(agent, country) {
   if (!agent) return false;
-  if (agent.role === 'country_manager' && agent.country === country) return true;
-  if (agent.role === 'linkedin_insights') return true;
+  if (
+    (['country_manager', 'country_manager_backup', 'department_admin', 'manager', 'ai_admin', 'ai_manager', 'ai_agent'].includes(agent.designation) &&
+      isValidDepartment(agent.department) &&
+      agent.country === country)
+    || agent.role === 'linkedin_insights'
+  ) {
+    return true;
+  }
   return false;
 }
 import fs from 'fs'
@@ -144,24 +158,34 @@ export function getLanguageOptionsForLocation({ country, state, city }) {
 }
 
 
+// Departmental roles and hierarchy for CRM (AI & Human)
+const { departments, roles } = require('../crm/shared/roles');
 // Agent pool example (in production, fetch from DB)
 const agents = [
-  { id: 1, name: 'Priya (Mumbai)', country: 'India', state: 'Maharashtra', city: 'Mumbai', role: 'country_manager', languages: ['Marathi', 'Hindi', 'English'] },
-  { id: 14, name: 'Anil (Deputy India)', country: 'India', state: 'Delhi', city: 'Delhi', role: 'country_manager_backup', languages: ['Hindi', 'English'] },
-  { id: 2, name: 'Amit (Delhi)', country: 'India', state: 'Delhi', city: 'Delhi', role: 'local', languages: ['Hindi', 'English', 'Punjabi'] },
-  { id: 5, name: 'Ravi (Bangalore)', country: 'India', state: 'Karnataka', city: 'Bangalore', role: 'local', languages: ['Kannada', 'English', 'Hindi'] },
-  { id: 6, name: 'Lakshmi (Chennai)', country: 'India', state: 'Tamil Nadu', city: 'Chennai', role: 'local', languages: ['Tamil', 'English'] },
-  { id: 7, name: 'Sourav (Kolkata)', country: 'India', state: 'West Bengal', city: 'Kolkata', role: 'local', languages: ['Bengali', 'Hindi', 'English'] },
-  { id: 8, name: 'Harpreet (Chandigarh)', country: 'India', state: 'Punjab', city: 'Chandigarh', role: 'local', languages: ['Punjabi', 'Hindi', 'English'] },
-  { id: 9, name: 'Meera (Ahmedabad)', country: 'India', state: 'Gujarat', city: 'Ahmedabad', role: 'local', languages: ['Gujarati', 'Hindi', 'English'] },
-  { id: 10, name: 'Anjali (Lucknow)', country: 'India', state: 'Uttar Pradesh', city: 'Lucknow', role: 'local', languages: ['Hindi', 'Urdu', 'English'] },
-  { id: 11, name: 'Ayesha (Hyderabad)', country: 'India', state: 'Telangana', city: 'Hyderabad', role: 'local', languages: ['Telugu', 'Urdu', 'English'] },
-  { id: 12, name: 'Nisha (Thiruvananthapuram)', country: 'India', state: 'Kerala', city: 'Thiruvananthapuram', role: 'local', languages: ['Malayalam', 'English', 'Hindi'] },
-  { id: 3, name: 'Sara (Dubai)', country: 'UAE', role: 'country_manager', languages: ['Arabic', 'English'] },
-  { id: 15, name: 'Omar (Deputy UAE)', country: 'UAE', role: 'country_manager_backup', languages: ['Arabic', 'English'] },
-  { id: 4, name: 'Olga (Russia Desk)', country: 'UAE', role: 'international', assignedCountries: ['Russia'], languages: ['Russian', 'English'] },
-  { id: 13, name: 'LinkedIn Insights Bot', country: 'GLOBAL', role: 'linkedin_insights', languages: ['English'] },
-]
+  { id: 1, name: 'Priya (Mumbai)', country: 'India', state: 'Maharashtra', city: 'Mumbai', department: 'Sales', designation: 'country_manager', role: 'country_manager', languages: ['Marathi', 'Hindi', 'English'] },
+  { id: 14, name: 'Anil (Deputy India)', country: 'India', state: 'Delhi', city: 'Delhi', department: 'Sales', designation: 'country_manager_backup', role: 'country_manager_backup', languages: ['Hindi', 'English'] },
+  { id: 2, name: 'Amit (Delhi)', country: 'India', state: 'Delhi', city: 'Delhi', department: 'Sales', designation: 'agent', role: 'local', languages: ['Hindi', 'English', 'Punjabi'] },
+  { id: 5, name: 'Ravi (Bangalore)', country: 'India', state: 'Karnataka', city: 'Bangalore', department: 'Sales', designation: 'agent', role: 'local', languages: ['Kannada', 'English', 'Hindi'] },
+  { id: 6, name: 'Lakshmi (Chennai)', country: 'India', state: 'Tamil Nadu', city: 'Chennai', department: 'Sales', designation: 'agent', role: 'local', languages: ['Tamil', 'English'] },
+  { id: 7, name: 'Sourav (Kolkata)', country: 'India', state: 'West Bengal', city: 'Kolkata', department: 'Sales', designation: 'agent', role: 'local', languages: ['Bengali', 'Hindi', 'English'] },
+  { id: 8, name: 'Harpreet (Chandigarh)', country: 'India', state: 'Punjab', city: 'Chandigarh', department: 'Sales', designation: 'agent', role: 'local', languages: ['Punjabi', 'Hindi', 'English'] },
+  { id: 9, name: 'Meera (Ahmedabad)', country: 'India', state: 'Gujarat', city: 'Ahmedabad', department: 'Sales', designation: 'agent', role: 'local', languages: ['Gujarati', 'Hindi', 'English'] },
+  { id: 10, name: 'Anjali (Lucknow)', country: 'India', state: 'Uttar Pradesh', city: 'Lucknow', department: 'Sales', designation: 'agent', role: 'local', languages: ['Hindi', 'Urdu', 'English'] },
+  { id: 11, name: 'Ayesha (Hyderabad)', country: 'India', state: 'Telangana', city: 'Hyderabad', department: 'Sales', designation: 'agent', role: 'local', languages: ['Telugu', 'Urdu', 'English'] },
+  { id: 12, name: 'Nisha (Thiruvananthapuram)', country: 'India', state: 'Kerala', city: 'Thiruvananthapuram', department: 'Sales', designation: 'agent', role: 'local', languages: ['Malayalam', 'English', 'Hindi'] },
+  { id: 3, name: 'Sara (Dubai)', country: 'UAE', department: 'Sales', designation: 'country_manager', role: 'country_manager', languages: ['Arabic', 'English'] },
+  { id: 15, name: 'Omar (Deputy UAE)', country: 'UAE', department: 'Sales', designation: 'country_manager_backup', role: 'country_manager_backup', languages: ['Arabic', 'English'] },
+  { id: 4, name: 'Olga (Russia Desk)', country: 'UAE', department: 'International', designation: 'international', role: 'international', assignedCountries: ['Russia'], languages: ['Russian', 'English'] },
+  { id: 13, name: 'LinkedIn Insights Bot', country: 'GLOBAL', department: 'Analytics', designation: 'ai_agent', role: 'linkedin_insights', languages: ['English'] },
+];
+
+// Validation helpers
+function isValidDepartment(dept) {
+  return departments.includes(dept);
+}
+function isValidDesignation(desig) {
+  return roles.includes(desig);
+}
 
 // Utility: Get the main and backup country manager for a given country
 export function getCountryManagerBackup(country) {

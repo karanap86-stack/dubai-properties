@@ -1,8 +1,37 @@
 import React from 'react'
 import { Search, Sparkles } from 'lucide-react'
+import propertyTypesByRegion from '../data/propertyTypesByRegion.json';
 
-export default function HeroSection() {
-  const [searchInput, setSearchInput] = React.useState('')
+  const [searchInput, setSearchInput] = React.useState('');
+  const [suggestions, setSuggestions] = React.useState([]);
+
+  // Get user region from localStorage (set by onboarding modal)
+  let userPrefs = null;
+  try {
+    userPrefs = JSON.parse(localStorage.getItem('userPrefs'));
+  } catch (e) { userPrefs = null; }
+  const region = userPrefs?.region || 'dubai';
+  const regionGroup = (() => {
+    if (region === 'dubai' || region === 'abu_dhabi') return 'uae';
+    if (region === 'india') return 'india';
+    // Add more as you expand
+    return 'uae';
+  })();
+  const propertyTypes = Object.entries(propertyTypesByRegion[regionGroup].categories)
+    .flatMap(([cat, arr]) => arr.map(opt => ({ ...opt, group: cat })))
+    .map(opt => ({ ...opt, label: `${opt.label} (${opt.group.charAt(0).toUpperCase() + opt.group.slice(1)})` }));
+
+  // Suggest property types as user types
+  React.useEffect(() => {
+    if (!searchInput) {
+      setSuggestions([]);
+      return;
+    }
+    const lower = searchInput.toLowerCase();
+    setSuggestions(
+      propertyTypes.filter(pt => pt.label.toLowerCase().includes(lower)).slice(0, 5)
+    );
+  }, [searchInput]);
 
   return (
     <div className="pt-32 pb-16 px-4 sm:px-8 lg:px-12">
@@ -43,12 +72,26 @@ export default function HeroSection() {
               <Search className="text-cyan-400 ml-4" size={20} />
               <input
                 type="text"
-                placeholder="Search by area, developer, or property type..."
+                placeholder={`Search by area, developer, or property type... (e.g. ${propertyTypes[0]?.label || 'Apartment'})`}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="flex-1 bg-transparent outline-none text-white placeholder-gray-400 py-4 px-3 text-lg"
                 style={{ fontSize: '1.15rem' }}
+                autoComplete="off"
               />
+              {suggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full bg-slate-900 border border-cyan-600/20 rounded-b-xl z-10 text-left">
+                  {suggestions.map((s, i) => (
+                    <div
+                      key={s.value}
+                      className="px-4 py-2 cursor-pointer hover:bg-cyan-700/20 text-white"
+                      onClick={() => setSearchInput(s.label)}
+                    >
+                      {s.label}
+                    </div>
+                  ))}
+                </div>
+              )}
               <button className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/50 transition-all text-lg">
                 Search
               </button>
