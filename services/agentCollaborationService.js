@@ -423,7 +423,7 @@ async function notifyEscalation(escalation) {
     // Priority notification channels based on urgency
     switch (escalation.urgency) {
       case 'urgent':
-        // SMS + WhatsApp + Email
+        // SMS + WhatsApp + Email + Slack
         await sendSMS(recipientPhone, message);
         await whatsappService.default.sendWhatsAppMessage(recipientPhone, message);
         await notificationService.default.sendEmailNotification({
@@ -431,8 +431,24 @@ async function notifyEscalation(escalation) {
           subject: '🚨 URGENT Escalation',
           body: message
         });
-        // TODO: Add Slack webhook if configured
-        // await fetch(process.env.SLACK_WEBHOOK_URL, { ... });
+        
+        // Slack webhook notification if configured
+        if (process.env.SLACK_WEBHOOK_URL) {
+          try {
+            await fetch(process.env.SLACK_WEBHOOK_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                text: `🚨 *URGENT ESCALATION*\n\n${message}`,
+                username: 'PropertyAI Bot',
+                icon_emoji: ':rotating_light:'
+              })
+            });
+          } catch (slackError) {
+            console.error('Slack notification failed:', slackError.message);
+            // Don't fail the whole escalation if Slack fails
+          }
+        }
         break;
         
       case 'high':

@@ -262,8 +262,50 @@ export function scheduleBidirectionalSync(crm, credentials, intervalMinutes = 30
         console.log(`Synced ${inboundSync.count} leads from ${crm}`);
         lastSyncDate = inboundSync.syncedAt;
         
-        // TODO: Update internal leads with new dispositions
-        // For each lead in inboundSync.leads, update local database
+        // Update internal leads with new dispositions from external CRM
+        const leadService = await import('./leadService');
+        let updatedCount = 0;
+        let conflictCount = 0;
+        
+        for (const lead of inboundSync.leads) {
+          try {
+            // Find matching lead by external ID (stored in lead.externalCrmId)
+            const allLeads = leadService.default.getAllLeads();
+            const matchingLead = allLeads.find(l => 
+              l.externalCrmId === lead.externalId || 
+              l.email === lead.email || 
+              l.phone === lead.phone
+            );
+            
+            if (matchingLead) {
+              // Check for conflicts: if internal status was updated more recently, skip
+              const internalLastUpdate = new Date(matchingLead.lastUpdated || matchingLead.createdAt);
+              const externalLastUpdate = new Date(lead.lastModified);
+              
+              if (externalLastUpdate > internalLastUpdate) {
+                // External is newer, update internal
+                leadService.default.setLeadStatus(
+                  matchingLead.id, 
+                  lead.internalDisposition,
+                  { 
+                    syncedFrom: crm, 
+                    syncedAt: new Date().toISOString(),
+                    externalStatus: lead.externalStatus 
+                  }
+                );
+                updatedCount++;
+              } else {
+                // Internal is newer or same, skip to avoid overwriting
+                conflictCount++;
+                console.log(`Skipped lead ${matchingLead.id}: internal data is newer`);
+              }
+            }
+          } catch (leadError) {
+            console.error(`Failed to update lead ${lead.externalId}:`, leadError.message);
+          }
+        }
+        
+        console.log(`✅ Updated ${updatedCount} leads, skipped ${conflictCount} conflicts`);
       }
     } catch (e) {
       console.error('Scheduled sync failed:', e);

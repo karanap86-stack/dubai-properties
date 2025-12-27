@@ -166,14 +166,89 @@ export async function notifyProvider(providerId, leadId, type) {
  */
 export async function sendEmailNotification(emailData) {
   try {
-    // In production, use SendGrid, AWS SES, or similar
     console.log('Email notification:', emailData);
     
-    // TODO: Integrate with actual email service when credentials are available
-    // Example with SendGrid:
-    // const sgMail = require('@sendgrid/mail');
-    // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    // await sgMail.send(emailData);
+    // Production email service integration
+    const emailProvider = process.env.EMAIL_PROVIDER || 'console'; // 'sendgrid', 'ses', 'console'
+    
+    switch (emailProvider.toLowerCase()) {
+      case 'sendgrid':
+        // SendGrid integration
+        if (process.env.SENDGRID_API_KEY) {
+          const sgMail = require('@sendgrid/mail');
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+          await sgMail.send({
+            to: emailData.to,
+            from: process.env.SENDGRID_FROM_EMAIL || 'noreply@propertyai.com',
+            subject: emailData.subject,
+            text: emailData.body,
+            html: emailData.html || emailData.body
+          });
+          console.log('✅ Email sent via SendGrid');
+        } else {
+          console.warn('SENDGRID_API_KEY not configured, email logged only');
+        }
+        break;
+        
+      case 'ses':
+        // AWS SES integration
+        if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+          const AWS = require('aws-sdk');
+          const ses = new AWS.SES({
+            region: process.env.AWS_REGION || 'us-east-1',
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+          });
+          
+          await ses.sendEmail({
+            Source: process.env.SES_FROM_EMAIL || 'noreply@propertyai.com',
+            Destination: { ToAddresses: [emailData.to] },
+            Message: {
+              Subject: { Data: emailData.subject },
+              Body: {
+                Text: { Data: emailData.body },
+                Html: { Data: emailData.html || emailData.body }
+              }
+            }
+          }).promise();
+          console.log('✅ Email sent via AWS SES');
+        } else {
+          console.warn('AWS credentials not configured, email logged only');
+        }
+        break;
+        
+      case 'smtp':
+        // Generic SMTP integration
+        if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+          const nodemailer = require('nodemailer');
+          const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT || 587,
+            secure: process.env.SMTP_SECURE === 'true',
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS
+            }
+          });
+          
+          await transporter.sendMail({
+            from: process.env.SMTP_FROM || 'noreply@propertyai.com',
+            to: emailData.to,
+            subject: emailData.subject,
+            text: emailData.body,
+            html: emailData.html || emailData.body
+          });
+          console.log('✅ Email sent via SMTP');
+        } else {
+          console.warn('SMTP credentials not configured, email logged only');
+        }
+        break;
+        
+      default:
+        // Development mode - just log
+        console.log('📧 [DEV MODE] Email:', emailData);
+        console.log('To enable real emails, set EMAIL_PROVIDER to sendgrid, ses, or smtp');
+    }
     
     logNotification({ type: 'email', ...emailData, status: 'sent' });
     return { success: true };
