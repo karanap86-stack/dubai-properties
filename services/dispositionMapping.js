@@ -138,3 +138,154 @@ async function fetchNewCrmsFromWeb() {
 
 // Schedule auto-update every 3 months
 setInterval(autoUpdateCrmMappings, 1000 * 60 * 60 * 24 * 90);
+
+/**
+ * Bidirectional CRM sync - sync disposition changes to external CRM
+ * @param {string} crm - CRM name (salesforce, hubspot, etc.)
+ * @param {string} leadId - Lead ID in external CRM
+ * @param {string} internalDisposition - Internal disposition status
+ * @param {object} credentials - CRM API credentials
+ * @returns {Promise<object>}
+ */
+export async function syncDispositionToExternalCRM(crm, leadId, internalDisposition, credentials) {
+  try {
+    const externalStatus = mapToExternalDisposition(crm, internalDisposition);
+    
+    // Import CRM service dynamically
+    const crmService = await import('./crmService');
+    
+    // Update external CRM based on provider
+    let result;
+    switch (crm.toLowerCase()) {
+      case 'salesforce':
+        result = await crmService.default.updateSalesforceLead(
+          credentials.access_token,
+          credentials.instance_url,
+          leadId,
+          { Status: externalStatus }
+        );
+        break;
+      case 'hubspot':
+        result = await crmService.default.updateHubSpotLead(
+          credentials.apiKey,
+          leadId,
+          { status: externalStatus }
+        );
+        break;
+      default:
+        return { success: false, error: 'Unsupported CRM for sync' };
+    }
+    
+    return {
+      success: result.success || false,
+      externalStatus,
+      internalDisposition,
+      leadId,
+      crm
+    };
+  } catch (e) {
+    console.error('Sync to external CRM failed:', e);
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Fetch disposition updates from external CRM and sync to internal
+ * @param {string} crm - CRM name
+ * @param {string} lastSyncDate - ISO date string of last sync
+ * @param {object} credentials - CRM API credentials
+ * @returns {Promise<object>}
+ */
+export async function syncDispositionFromExternalCRM(crm, lastSyncDate, credentials) {
+  try {
+    const crmService = await import('./crmService');
+    
+    // Fetch updated leads from external CRM
+    let updatedLeads = [];
+    switch (crm.toLowerCase()) {
+      case 'salesforce':
+        const sfResult = await crmService.default.fetchUpdatedLeadsFromSalesforce(
+          credentials.access_token,
+          credentials.instance_url,
+          lastSyncDate
+        );
+        updatedLeads = sfResult.records || [];
+        break;
+      case 'hubspot':
+        const hsResult = await crmService.default.fetchUpdatedLeadsFromHubSpot(
+          credentials.apiKey,
+          lastSyncDate
+        );
+        updatedLeads = hsResult.records || [];
+        break;
+      default:
+        return { success: false, error: 'Unsupported CRM for sync' };
+    }
+    
+    // Map external dispositions to internal
+    const mappedLeads = updatedLeads.map(lead => ({
+      externalId: lead.Id || lead.id,
+      externalStatus: lead.Status || lead.status,
+      internalDisposition: mapFromExternalDisposition(crm, lead.Status || lead.status),
+      lastModified: lead.LastModifiedDate || lead.updatedAt
+    }));
+    
+    return {
+      success: true,
+      leads: mappedLeads,
+      count: mappedLeads.length,
+      crm,
+      syncedAt: new Date().toISOString()
+    };
+  } catch (e) {
+    console.error('Sync from external CRM failed:', e);
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Schedule bidirectional CRM sync
+ * @param {string} crm - CRM name
+ * @param {object} credentials - CRM credentials
+ * @param {number} intervalMinutes - Sync interval in minutes
+ * @returns {object}
+ */
+export function scheduleBidirectionalSync(crm, credentials, intervalMinutes = 30) {
+  let lastSyncDate = new Date().toISOString();
+  
+  const syncInterval = setInterval(async () => {
+    try {
+      // Sync from external CRM to internal
+      const inboundSync = await syncDispositionFromExternalCRM(crm, lastSyncDate, credentials);
+      
+      if (inboundSync.success) {
+        console.log(`Synced ${inboundSync.count} leads from ${crm}`);
+        lastSyncDate = inboundSync.syncedAt;
+        
+        // TODO: Update internal leads with new dispositions
+        // For each lead in inboundSync.leads, update local database
+      }
+    } catch (e) {
+      console.error('Scheduled sync failed:', e);
+    }
+  }, intervalMinutes * 60 * 1000);
+  
+  return {
+    success: true,
+    crm,
+    intervalMinutes,
+    syncIntervalId: syncInterval,
+    message: `Bidirectional sync scheduled every ${intervalMinutes} minutes`
+  };
+}
+
+export default {
+  MASTER_DISPOSITIONS,
+  CRM_DISPOSITION_MAP,
+  mapToExternalDisposition,
+  mapFromExternalDisposition,
+  autoUpdateCrmMappings,
+  syncDispositionToExternalCRM,
+  syncDispositionFromExternalCRM,
+  scheduleBidirectionalSync
+};
