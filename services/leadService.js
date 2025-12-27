@@ -18,19 +18,21 @@ export function setLeadStatus(leadId, status, meta = {}) {
   lead.statusHistory.push({ status, changedAt: new Date().toISOString(), ...meta });
   lead.lastUpdated = new Date().toISOString();
   localStorage.setItem(LEAD_STORAGE_KEY, JSON.stringify(leads));
-  // Optionally, trigger automations/notifications for key statuses
+  // Trigger automations/notifications for key statuses
+  const notificationService = await import('./notificationService');
+  
   if (status === 'kyc_pending') {
     // Notify client to upload KYC docs
-    // notificationService.notifyClientKycPending(leadId);
+    notificationService.default.notifyClientKycPending(leadId);
   } else if (status === 'payment_pending') {
     // Notify client to complete payment
-    // notificationService.notifyClientPaymentPending(leadId);
+    notificationService.default.notifyClientPaymentPending(leadId);
   } else if (status === 'negotiation') {
     // Notify agent/developer for negotiation
-    // notificationService.notifyNegotiationStarted(leadId);
+    notificationService.default.notifyNegotiationStarted(leadId);
   } else if (status === 'pending_approval') {
     // Notify approver/admin
-    // notificationService.notifyPendingApproval(leadId);
+    notificationService.default.notifyPendingApproval(leadId);
   }
   return { success: true, status };
 }

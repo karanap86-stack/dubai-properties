@@ -352,28 +352,117 @@ export function getCollaborationAnalytics(filters = {}) {
  * @param {object} data
  */
 function notifyParticipants(session, eventType, data = {}) {
-  // TODO: Implement real-time notifications (WebSocket, Push, etc.)
+  // Implement real-time notifications
   console.log('Notify participants:', { session: session.id, eventType, data });
   
-  // In production, send notifications via:
-  // - WebSocket for real-time updates
-  // - Push notifications for mobile
-  // - Email for important escalations
+  // Send notifications to all participants
+  session.participants.forEach(async (participant) => {
+    try {
+      if (participant.phone) {
+        // Send WhatsApp notification for immediate alerts
+        const whatsappService = await import('./whatsappService');
+        let message = '';
+        
+        switch (eventType) {
+          case 'session_created':
+            message = `New collaboration session started for ${session.leadId || session.clientId}. You have been added as a participant.`;
+            break;
+          case 'note_added':
+            message = `New note added by ${data.note?.addedBy} in session ${session.id}.`;
+            break;
+          default:
+            message = `Update in collaboration session ${session.id}: ${eventType}`;
+        }
+        
+        await whatsappService.default.sendWhatsAppMessage(participant.phone, message);
+      }
+      
+      // For web users, use WebSocket (if available)
+      if (typeof window !== 'undefined' && window.socket) {
+        window.socket.emit('collaboration_update', {
+          sessionId: session.id,
+          eventType,
+          data
+        });
+      }
+      
+      // For important events, send email
+      if (['session_created', 'escalated'].includes(eventType) && participant.email) {
+        const notificationService = await import('./notificationService');
+        await notificationService.default.sendEmailNotification({
+          to: participant.email,
+          subject: `Collaboration Session ${eventType}`,
+          body: `Session ${session.id} has been ${eventType}. Please check your dashboard for details.`
+        });
+      }
+    } catch (e) {
+      console.error(`Failed to notify participant ${participant.agentId}:`, e);
+    }
+  });
 }
 
 /**
  * Notify about escalation
  * @param {object} escalation
  */
-function notifyEscalation(escalation) {
-  // TODO: Implement escalation notifications (SMS, Push, Email, Slack)
+async function notifyEscalation(escalation) {
+  // Implement escalation notifications based on urgency
   console.log('Escalation notification:', escalation);
   
-  // Priority notification channels based on urgency:
-  // - Urgent: SMS + Push + Email + Slack
-  // - High: Push + Email
-  // - Medium: Push or Email
-  // - Low: Email only
+  try {
+    const whatsappService = await import('./whatsappService');
+    const { sendSMS } = await import('./telephonyService');
+    const notificationService = await import('./notificationService');
+    
+    const message = `🚨 ESCALATION ${escalation.urgency.toUpperCase()}\n\nSession: ${escalation.sessionId}\nReason: ${escalation.reason}\nEscalated by: ${escalation.escalatedBy}\n\nAction required: Review and accept escalation.`;
+    
+    // Get assigned agent or all human agents
+    const recipientPhone = escalation.assignTo?.phone || '+917028923314'; // Default to admin
+    const recipientEmail = escalation.assignTo?.email || process.env.ADMIN_EMAIL;
+    
+    // Priority notification channels based on urgency
+    switch (escalation.urgency) {
+      case 'urgent':
+        // SMS + WhatsApp + Email
+        await sendSMS(recipientPhone, message);
+        await whatsappService.default.sendWhatsAppMessage(recipientPhone, message);
+        await notificationService.default.sendEmailNotification({
+          to: recipientEmail,
+          subject: '🚨 URGENT Escalation',
+          body: message
+        });
+        // TODO: Add Slack webhook if configured
+        // await fetch(process.env.SLACK_WEBHOOK_URL, { ... });
+        break;
+        
+      case 'high':
+        // WhatsApp + Email
+        await whatsappService.default.sendWhatsAppMessage(recipientPhone, message);
+        await notificationService.default.sendEmailNotification({
+          to: recipientEmail,
+          subject: 'High Priority Escalation',
+          body: message
+        });
+        break;
+        
+      case 'medium':
+        // WhatsApp or Email
+        await whatsappService.default.sendWhatsAppMessage(recipientPhone, message);
+        break;
+        
+      case 'low':
+      default:
+        // Email only
+        await notificationService.default.sendEmailNotification({
+          to: recipientEmail,
+          subject: 'New Escalation',
+          body: message
+        });
+        break;
+    }
+  } catch (e) {
+    console.error('Notify escalation failed:', e);
+  }
 }
 
 export default {

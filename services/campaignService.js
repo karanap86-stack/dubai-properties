@@ -175,16 +175,22 @@ async function executeEmailCampaign(campaign) {
   let sent = 0;
   let failed = 0;
   
+  // Import email service
+  const emailService = notificationService;
+  
   for (const recipient of campaign.audience) {
     try {
-      // TODO: Replace with actual email service (SendGrid, AWS SES, etc.)
-      await notificationService.sendEmailNotification({
+      // Use notification service for email
+      await emailService.sendEmailNotification({
         to: recipient.contact,
         subject: campaign.message.subject || campaign.name,
         body: campaign.message.body || '',
         html: campaign.message.html || null
       });
       sent++;
+      
+      // Small delay to respect rate limits
+      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (e) {
       console.error(`Email send failed for ${recipient.contact}:`, e);
       failed++;
@@ -203,12 +209,18 @@ async function executeSMSCampaign(campaign) {
   let sent = 0;
   let failed = 0;
   
+  // Import SMS service
+  const { sendSMS } = await import('./telephonyService');
+  
   for (const recipient of campaign.audience) {
     try {
-      // TODO: Replace with actual SMS service
-      // await sendSMS(recipient.contact, campaign.message.body);
-      console.log(`SMS sent to ${recipient.contact}: ${campaign.message.body}`);
-      sent++;
+      // Use telephony service for SMS
+      const result = await sendSMS(recipient.contact, campaign.message.body);
+      if (result.success) {
+        sent++;
+      } else {
+        failed++;
+      }
       
       // Small delay to respect rate limits
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -315,12 +327,21 @@ export function scheduleCampaign(campaignId, scheduleDate) {
       }
     });
     
-    // TODO: In production, use a job scheduler (e.g., Bull, Agenda, AWS EventBridge)
+    // Use setTimeout for scheduling (in production, use Bull/Agenda/EventBridge)
     const delay = scheduleDate.getTime() - Date.now();
     if (delay > 0) {
-      setTimeout(() => {
+      // Store timeout ID for potential cancellation
+      const timeoutId = setTimeout(() => {
         executeCampaign(campaignId);
       }, delay);
+      
+      // Store timeout ID in campaign for cancellation capability
+      updateCampaign(campaignId, { timeoutId });
+      
+      // In production, use a proper job scheduler:
+      // const Bull = require('bull');
+      // const queue = new Bull('campaign-scheduler');
+      // await queue.add({ campaignId }, { delay });
     }
     
     return { success: true, scheduledFor: scheduleDate.toISOString() };

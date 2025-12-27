@@ -100,8 +100,11 @@ export function handleIncomingWhatsApp(req) {
       direction: 'inbound'
     };
     
-    // TODO: Store in database for conversation history
-    // TODO: Trigger AI agent response or route to human agent
+    // Store in conversation history
+    logWhatsAppConversation(messageData);
+    
+    // Trigger AI agent response or route to human agent
+    handleIncomingMessage(messageData);
     
     return {
       success: true,
@@ -172,13 +175,74 @@ export async function sendBulkWhatsApp(recipients, delayMs = 1000) {
  */
 export function logWhatsAppConversation(messageData) {
   try {
-    // TODO: Store in database for conversation history and analytics
-    // For now, just console log
-    console.log('WhatsApp conversation:', messageData);
+    // Store in localStorage (replace with database in production)
+    const WHATSAPP_LOGS_KEY = 'whatsapp_conversation_logs';
+    const logs = JSON.parse(localStorage.getItem(WHATSAPP_LOGS_KEY) || '[]');
+    logs.push({
+      ...messageData,
+      loggedAt: new Date().toISOString()
+    });
+    // Keep last 1000 messages
+    localStorage.setItem(WHATSAPP_LOGS_KEY, JSON.stringify(logs.slice(-1000)));
+    
+    // In production, save to database:
+    // await db.whatsappMessages.create(messageData);
+    
     return { success: true };
   } catch (e) {
     console.error('Log WhatsApp conversation failed:', e);
     return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Handle incoming message - route to AI or human agent
+ * @param {object} messageData
+ */
+async function handleIncomingMessage(messageData) {
+  try {
+    // Import AI chatbot service
+    const aiChatbotService = await import('./aiChatbotService');
+    
+    // Detect if message requires human escalation
+    const urgentKeywords = ['urgent', 'emergency', 'complaint', 'manager', 'speak to someone'];
+    const requiresHuman = urgentKeywords.some(kw => messageData.body.toLowerCase().includes(kw));
+    
+    if (requiresHuman) {
+      // Escalate to human agent
+      const collaborationService = await import('./agentCollaborationService');
+      const session = collaborationService.default.createCollaborationSession({
+        clientId: messageData.from,
+        initiatedBy: 'AI',
+        type: 'support',
+        context: { message: messageData.body, channel: 'whatsapp' }
+      });
+      
+      collaborationService.default.escalateToHuman(session.session.id, {
+        reason: 'Client requested human assistance via WhatsApp',
+        escalatedBy: 'AI',
+        urgency: 'high'
+      });
+      
+      // Send acknowledgment
+      await sendWhatsAppMessage(
+        messageData.from,
+        "Thank you for reaching out. I'm connecting you with one of our team members who will assist you shortly."
+      );
+    } else {
+      // Let AI handle it
+      const response = await aiChatbotService.default.getResponse(
+        messageData.body,
+        messageData.from,
+        'en',
+        'ai-whatsapp-agent'
+      );
+      
+      // Send AI response back
+      await sendWhatsAppMessage(messageData.from, response);
+    }
+  } catch (e) {
+    console.error('Handle incoming message failed:', e);
   }
 }
 
