@@ -505,7 +505,9 @@
 
 ## Investor Pitch (One-Liner)
 
-> **"We're building the Bloomberg Terminal for Real Estate - An operating system that owns the entire communication infrastructure (telephony, WhatsApp, email), eliminates ₹75K/month in developer workforce costs, and creates a winner-takes-most network effect in India's ₹7,55,000 Cr real estate market. Year 1: ₹60.61 Cr revenue, 88% margin. Seeking ₹10-15 Cr seed for 18-month runway to Series A at ₹250-350 Cr valuation."**
+## **India's Property UPI: Transparent, Tracked, Trusted**
+
+> **"We're building India's Property UPI - An operating system that owns the entire communication infrastructure (telephony, WhatsApp, email), makes every transaction transparent for ₹45,000 Cr tax recovery, and creates a winner-takes-most network effect in India's ₹7,55,000 Cr real estate market. Year 1: ₹60.61 Cr revenue, 88% margin. Government partnership potential. Seeking ₹10-15 Cr seed for 18-month runway to Series A at ₹250-350 Cr valuation."**
 
 ---
 

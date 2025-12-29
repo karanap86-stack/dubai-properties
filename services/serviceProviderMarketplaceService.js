@@ -1,12 +1,16 @@
 /**
  * EstatelyticAI - Service Provider Marketplace System (DEMO)
+ * 
+ * ═══════════════════════════════════════════════════════════════════
+ *     INDIA'S PROPERTY UPI: TRANSPARENT, TRACKED, TRUSTED
+ * ═══════════════════════════════════════════════════════════════════
+ * 
  * Two-Tier Provider Model:
  * - TYPE 1 (Integrated): Legal, Financial services (₹5K/month subscription, full CRM integration)
  * - TYPE 2 (Marketplace): Interiors, Packers, Vastu, etc. (0 subscription, 25% commission on deals)
- * 
+ *
  * INVESTOR DEMO - Lead Auction System
- */
-
+ * Every provider tracked | Every transaction transparent | Zero fraud
 const { v4: uuidv4 } = require('uuid');
 
 // =============================================================================
