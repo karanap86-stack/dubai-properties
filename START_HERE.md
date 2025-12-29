@@ -1,3 +1,9 @@
+<!-- 
+� 2025 EstatelyticAI. All Rights Reserved.
+Confidential and Proprietary Information.
+Unauthorized use, disclosure, or reproduction is prohibited.
+-->
+
 ═══════════════════════════════════════════════════════════════════════════════
 🎉 DUBAI PROPERTIES - AI-POWERED REAL ESTATE PLATFORM - COMPLETE! 🎉
 ═══════════════════════════════════════════════════════════════════════════════

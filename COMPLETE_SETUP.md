@@ -1,3 +1,9 @@
+<!-- 
+© 2025 EstatelyticAI. All Rights Reserved.
+Confidential and Proprietary Information.
+Unauthorized use, disclosure, or reproduction is prohibited.
+-->
+
 ## 7. Ensuring Complete & Up-to-Date Developer Data
 
 ### How to Ensure Initial Data is Complete

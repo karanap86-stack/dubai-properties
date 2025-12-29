@@ -1,4 +1,7 @@
 /**
+ * © 2025 EstatelyticAI. All Rights Reserved.
+ * Confidential and Proprietary Information.
+ * 
  * EstatelyticAI - Service Provider Invitation System (DEMO)
  * Viral Onboarding - Client invites their own service providers
  * 

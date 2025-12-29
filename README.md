@@ -1,3 +1,9 @@
+<!-- 
+© 2025 EstatelyticAI. All Rights Reserved.
+Confidential and Proprietary Information.
+Unauthorized use, disclosure, or reproduction is prohibited.
+-->
+
 # ðŸš€ How to Update and Deploy
 
 1. Make your code changes locally.

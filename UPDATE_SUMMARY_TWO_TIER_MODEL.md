@@ -1,3 +1,9 @@
+<!-- 
+© 2025 EstatelyticAI. All Rights Reserved.
+Confidential and Proprietary Information.
+Unauthorized use, disclosure, or reproduction is prohibited.
+-->
+
 # Two-Tier Provider Model Update - Complete Summary
 
 ## ✅ All Tasks Completed and Pushed to GitHub

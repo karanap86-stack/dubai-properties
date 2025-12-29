@@ -1,3 +1,9 @@
+<!-- 
+© 2025 EstatelyticAI. All Rights Reserved.
+Confidential and Proprietary Information.
+Unauthorized use, disclosure, or reproduction is prohibited.
+-->
+
 # Quick Reference Guide - Dubai Properties Platform
 
 ## ğŸš€ Quick Start Commands

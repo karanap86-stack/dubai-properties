@@ -1,4 +1,7 @@
 /**
+ * © 2025 EstatelyticAI. All Rights Reserved.
+ * Confidential and Proprietary Information.
+ * 
  * EstatelyticAI - Service Provider Marketplace System (DEMO)
  * 
  * ═══════════════════════════════════════════════════════════════════

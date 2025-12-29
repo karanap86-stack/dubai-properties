@@ -1,4 +1,7 @@
 /**
+ * © 2025 EstatelyticAI. All Rights Reserved.
+ * Confidential and Proprietary Information.
+ * 
  * EstatelyticAI - Communication API (DEMO)
  * Owned Infrastructure - Telephony, WhatsApp, Email, SMS
  * 

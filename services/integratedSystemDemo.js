@@ -1,4 +1,7 @@
 /**
+ * © 2025 EstatelyticAI. All Rights Reserved.
+ * Confidential and Proprietary Information.
+ * 
  * EstatelyticAI - Integrated System Demo
  * Complete End-to-End Flow: Property Search → Service Providers → Communication
  * 
