@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EstatelyticAI - Client Portal (DEMO)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+    
+    /* Navbar */
+    .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .navbar h1 { font-size: 1.5rem; }
+    .navbar .user-info { display: flex; align-items: center; gap: 1rem; }
+    .navbar .user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; }
+    
+    /* Main Container */
+    .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+    
+    /* Property Intent Selector */
+    .intent-selector { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .intent-selector h2 { margin-bottom: 1rem; color: #333; }
+    .intent-options { display: flex; gap: 1rem; }
+    .intent-option { flex: 1; padding: 1.5rem; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.3s; }
+    .intent-option:hover { border-color: #667eea; transform: translateY(-2px); }
+    .intent-option.active { border-color: #667eea; background: #f0f4ff; }
+    .intent-option .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .intent-option h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .intent-option p { font-size: 0.9rem; color: #666; }
+    
+    /* Property Grid */
+    .property-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .property-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.3s; }
+    .property-card:hover { transform: translateY(-5px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .property-card img { width: 100%; height: 220px; object-fit: cover; }
+    .property-card .content { padding: 1.5rem; }
+    .property-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #333; }
+    .property-card .price { font-size: 1.4rem; font-weight: bold; color: #667eea; margin-bottom: 0.5rem; }
+    .property-card .location { color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .property-card .specs { display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.9rem; color: #666; }
+    .property-card .score { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .score-badge { padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
+    .score-badge.self-use { background: #e8f5e9; color: #2e7d32; }
+    .score-badge.investment { background: #e3f2fd; color: #1565c0; }
+    .property-card .actions { display: flex; gap: 1rem; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-primary { background: #667eea; color: white; }
+    .btn-primary:hover { background: #5568d3; }
+    .btn-secondary { background: white; color: #667eea; border: 2px solid #667eea; }
+    .btn-secondary:hover { background: #f0f4ff; }
+    
+    /* Service Provider Section */
+    .service-section { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .service-section h2 { margin-bottom: 1.5rem; color: #333; }
+    .service-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+    .service-card { border: 2px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .service-card:hover { border-color: #667eea; background: #f0f4ff; }
+    .service-card .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .service-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .service-card p { font-size: 0.85rem; color: #666; }
+    .service-card .count { font-size: 0.8rem; color: #999; margin-top: 0.5rem; }
+    
+    /* Transaction Journey */
+    .journey { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .journey h2 { margin-bottom: 1.5rem; color: #333; }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: #e0e0e0; }
+    .timeline-item { position: relative; padding-bottom: 2rem; }
+    .timeline-item::before { content: ''; position: absolute; left: -2.5rem; top: 0; width: 20px; height: 20px; border-radius: 50%; background: #667eea; border: 4px solid white; box-shadow: 0 0 0 2px #667eea; }
+    .timeline-item.completed::before { background: #4caf50; box-shadow: 0 0 0 2px #4caf50; }
+    .timeline-item.pending::before { background: #ffc107; box-shadow: 0 0 0 2px #ffc107; }
+    .timeline-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .timeline-item p { color: #666; font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .timeline-item .status { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; }
+    .status.completed { background: #e8f5e9; color: #2e7d32; }
+    .status.in-progress { background: #fff3e0; color: #f57c00; }
+    .status.pending { background: #f5f5f5; color: #757575; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <h1>🏠 EstatelyticAI - Client Portal</h1>
+    <div class="user-info">
+      <span>Rahul Sharma</span>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%23667eea' width='40' height='40'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='20' font-family='Arial'%3ERS%3C/text%3E%3C/svg%3E" alt="User">
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Property Intent Selector -->
+    <div class="intent-selector">
+      <h2>What are you looking for?</h2>
+      <div class="intent-options">
+        <div class="intent-option active">
+          <div class="icon">🏠</div>
+          <h3>Self-Use</h3>
+          <p>Focus on livability, schools, hospitals, safety</p>
+        </div>
+        <div class="intent-option">
+          <div class="icon">💰</div>
+          <h3>Investment</h3>
+          <p>Focus on ROI, appreciation, rental yield</p>
+        </div>
+        <div class="intent-option">
+          <div class="icon">🔄</div>
+          <h3>Both</h3>
+          <p>Balanced scoring for live + invest</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Grid -->
+    <div class="property-grid">
+      <!-- Property 1 -->
+      <div class="property-card">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect fill='%23e0e0e0' width='400' height='220'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='18' font-family='Arial'%3EProperty Image%3C/text%3E%3C/svg%3E" alt="Property">
+        <div class="content">
+          <h3>Skyline Residency - 2BHK</h3>
+          <div class="price">₹1.2 Cr</div>
+          <div class="location">📍 Bandra West, Mumbai</div>
+          <div class="specs">
+            <span>🛏️ 2 BHK</span>
+            <span>📏 850 sq.ft</span>
+            <span>🏗️ Ready to Move</span>
+          </div>
+          <div class="score">
+            <div class="score-badge self-use">Self-Use: 8.5/10</div>
+            <div class="score-badge investment">Investment: 7.2/10</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary">Book Site Visit</button>
+            <button class="btn btn-secondary">Compare</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property 2 -->
+      <div class="property-card">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect fill='%23e0e0e0' width='400' height='220'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='18' font-family='Arial'%3EProperty Image%3C/text%3E%3C/svg%3E" alt="Property">
+        <div class="content">
+          <h3>Green Valley - 3BHK</h3>
+          <div class="price">₹2.5 Cr</div>
+          <div class="location">📍 Whitefield, Bengaluru</div>
+          <div class="specs">
+            <span>🛏️ 3 BHK</span>
+            <span>📏 1,400 sq.ft</span>
+            <span>🏗️ Under Construction</span>
+          </div>
+          <div class="score">
+            <div class="score-badge self-use">Self-Use: 9.1/10</div>
+            <div class="score-badge investment">Investment: 8.8/10</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary">Book Site Visit</button>
+            <button class="btn btn-secondary">Compare</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property 3 -->
+      <div class="property-card">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect fill='%23e0e0e0' width='400' height='220'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='18' font-family='Arial'%3EProperty Image%3C/text%3E%3C/svg%3E" alt="Property">
+        <div class="content">
+          <h3>Metro View Apartments - 2BHK</h3>
+          <div class="price">₹95 Lakhs</div>
+          <div class="location">📍 Andheri East, Mumbai</div>
+          <div class="specs">
+            <span>🛏️ 2 BHK</span>
+            <span>📏 750 sq.ft</span>
+            <span>🏗️ Ready to Move</span>
+          </div>
+          <div class="score">
+            <div class="score-badge self-use">Self-Use: 7.8/10</div>
+            <div class="score-badge investment">Investment: 9.2/10</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary">Book Site Visit</button>
+            <button class="btn btn-secondary">Compare</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service Provider Section -->
+    <div class="service-section">
+      <h2>Complete Your Property Journey - One Platform</h2>
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="icon">⚖️</div>
+          <h3>Legal Services</h3>
+          <p>Lawyers, Notaries, Registration</p>
+          <div class="count">127 verified lawyers in Mumbai</div>
+        </div>
+        <div class="service-card">
+          <div class="icon">💼</div>
+          <h3>Home Loans</h3>
+          <p>Best rates from 15+ banks</p>
+          <div class="count">43 loan consultants available</div>
+        </div>
+        <div class="service-card">
+          <div class="icon">🔍</div>
+          <h3>Home Inspection</h3>
+          <p>Expert property inspection</p>
+          <div class="count">32 inspectors in Bengaluru</div>
+        </div>
+        <div class="service-card">
+          <div class="icon">🎨</div>
+          <h3>Interior Design</h3>
+          <p>Complete home makeover</p>
+          <div class="count">89 designers | ₹2.5L - ₹15L</div>
+        </div>
+        <div class="service-card">
+          <div class="icon">📦</div>
+          <h3>Packers & Movers</h3>
+          <p>Safe relocation services</p>
+          <div class="count">56 movers | ₹8K - ₹50K</div>
+        </div>
+        <div class="service-card">
+          <div class="icon">🏛️</div>
+          <h3>Vastu Consultation</h3>
+          <p>Vastu-compliant planning</p>
+          <div class="count">18 consultants available</div>
+        </div>
+        <div class="service-card">
+          <div class="icon">🔌</div>
+          <h3>Utility Setup</h3>
+          <p>Electricity, water, gas, internet</p>
+          <div class="count">One-click activation</div>
+        </div>
+        <div class="service-card">
+          <div class="icon">🧹</div>
+          <h3>Home Cleaning</h3>
+          <p>Deep cleaning before move-in</p>
+          <div class="count">24 cleaning services</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction Journey -->
+    <div class="journey">
+      <h2>Your Property Journey - Skyline Residency</h2>
+      <div class="timeline">
+        <div class="timeline-item completed">
+          <h3>Site Visit Completed</h3>
+          <p>Visited property with partner Priya Mehta on Dec 15, 2025</p>
+          <span class="status completed">✓ Completed</span>
+        </div>
+        <div class="timeline-item completed">
+          <h3>Token Payment</h3>
+          <p>Paid ₹2,00,000 token amount on Dec 18, 2025</p>
+          <span class="status completed">✓ Completed</span>
+        </div>
+        <div class="timeline-item in-progress">
+          <h3>Home Loan Approval</h3>
+          <p>Working with CA Suresh Kumar for HDFC loan (₹80L sanctioned)</p>
+          <span class="status in-progress">⏳ In Progress</span>
+        </div>
+        <div class="timeline-item pending">
+          <h3>Legal Verification</h3>
+          <p>Lawyer Adv. Ramesh Iyer will verify all documents</p>
+          <span class="status pending">⏸️ Pending</span>
+        </div>
+        <div class="timeline-item pending">
+          <h3>Property Registration</h3>
+          <p>Online registration with Maharashtra IGR (expected Jan 5, 2026)</p>
+          <span class="status pending">⏸️ Pending</span>
+        </div>
+        <div class="timeline-item pending">
+          <h3>Interior Design</h3>
+          <p>Get quotes from top 3 interior designers (budget: ₹5L)</p>
+          <span class="status pending">⏸️ Pending</span>
+        </div>
+        <div class="timeline-item pending">
+          <h3>Move-In</h3>
+          <p>Packers & movers + home cleaning (expected Feb 1, 2026)</p>
+          <span class="status pending">⏸️ Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Intent selector
+    document.querySelectorAll('.intent-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.intent-option').forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        // In real app: re-calculate property scores based on selected intent
+      });
+    });
+
+    // Service card click
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.addEventListener('click', () => {
+        alert('Opening service provider marketplace for: ' + card.querySelector('h3').textContent);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EstatelyticAI - Service Provider Marketplace Portal (DEMO)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+    
+    /* Navbar */
+    .navbar { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .navbar h1 { font-size: 1.5rem; }
+    .navbar .user-info { display: flex; align-items: center; gap: 1rem; }
+    .navbar .user-info .badge { background: rgba(255,255,255,0.3); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+    
+    /* Container */
+    .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+    
+    /* Stats Dashboard */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .stat-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .stat-card .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .stat-card .value { font-size: 2rem; font-weight: bold; color: #333; margin-bottom: 0.25rem; }
+    .stat-card .label { font-size: 0.9rem; color: #666; }
+    .stat-card .change { font-size: 0.85rem; margin-top: 0.5rem; }
+    .change.positive { color: #4caf50; }
+    .change.negative { color: #f44336; }
+    
+    /* Hot Leads Section */
+    .section { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .section h2 { margin-bottom: 1.5rem; color: #333; display: flex; align-items: center; gap: 0.5rem; }
+    .section h2 .badge { background: #ff5252; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+    
+    /* Lead Card */
+    .lead-grid { display: grid; gap: 1.5rem; }
+    .lead-card { border: 2px solid #e0e0e0; border-radius: 12px; padding: 1.5rem; transition: all 0.3s; position: relative; }
+    .lead-card:hover { border-color: #f5576c; box-shadow: 0 4px 12px rgba(245,87,108,0.15); }
+    .lead-card .hot-badge { position: absolute; top: -10px; right: 20px; background: #ff5252; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 0.85rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .lead-card .header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem; }
+    .lead-card .header h3 { font-size: 1.2rem; color: #333; }
+    .lead-card .header .budget { font-size: 1.4rem; font-weight: bold; color: #f5576c; }
+    .lead-card .details { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; font-size: 0.9rem; color: #666; }
+    .lead-card .details div { display: flex; align-items: center; gap: 0.5rem; }
+    .lead-card .client-info { background: #f5f5f5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    .lead-card .client-info h4 { font-size: 0.9rem; color: #333; margin-bottom: 0.5rem; }
+    .lead-card .client-info p { font-size: 0.85rem; color: #666; }
+    .lead-card .auction-info { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: #fff3e0; border-radius: 8px; margin-bottom: 1rem; }
+    .auction-info .timer { font-weight: bold; color: #f57c00; }
+    .auction-info .bidders { font-size: 0.85rem; color: #666; }
+    .lead-card .actions { display: flex; gap: 1rem; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-primary { background: #f5576c; color: white; }
+    .btn-primary:hover { background: #e04759; }
+    .btn-secondary { background: white; color: #f5576c; border: 2px solid #f5576c; }
+    .btn-secondary:hover { background: #fff0f2; }
+    
+    /* Portfolio Section */
+    .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+    .portfolio-item { border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .portfolio-item:hover { transform: translateY(-5px); }
+    .portfolio-item img { width: 100%; height: 180px; object-fit: cover; }
+    .portfolio-item .info { padding: 1rem; background: white; }
+    .portfolio-item h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .portfolio-item .meta { font-size: 0.8rem; color: #666; display: flex; justify-content: space-between; }
+    
+    /* Rating Section */
+    .rating-card { border: 2px solid #e0e0e0; border-radius: 12px; padding: 1.5rem; }
+    .rating-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .rating-header .score { font-size: 3rem; font-weight: bold; color: #f5576c; }
+    .rating-header .stars { font-size: 1.5rem; color: #ffd700; }
+    .rating-metrics { display: grid; gap: 1rem; }
+    .metric { display: flex; align-items: center; gap: 1rem; }
+    .metric .label { flex: 1; font-size: 0.9rem; color: #666; }
+    .metric .bar { flex: 2; height: 8px; background: #e0e0e0; border-radius: 4px; position: relative; overflow: hidden; }
+    .metric .bar .fill { height: 100%; background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); border-radius: 4px; }
+    .metric .score { font-weight: bold; color: #333; }
+    
+    /* Earnings Section */
+    .earnings-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+    .earnings-chart { background: #f5f5f5; border-radius: 8px; padding: 1.5rem; }
+    .earnings-summary { }
+    .earnings-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e0e0e0; }
+    .earnings-item:last-child { border-bottom: none; }
+    .earnings-item .label { color: #666; }
+    .earnings-item .amount { font-weight: bold; color: #333; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <h1>🎨 EstatelyticAI - Service Provider Portal</h1>
+    <div class="user-info">
+      <span>Design Studio India</span>
+      <span class="badge">Interior Designer</span>
+      <span class="badge">⭐ 4.8 Rating</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Stats Dashboard -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="icon">🔥</div>
+        <div class="value">12</div>
+        <div class="label">Hot Leads Available</div>
+        <div class="change positive">↑ 3 new today</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">💼</div>
+        <div class="value">8</div>
+        <div class="label">Active Projects</div>
+        <div class="change positive">↑ 2 this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">💰</div>
+        <div class="value">₹24.5L</div>
+        <div class="label">Total Earnings (This Month)</div>
+        <div class="change positive">↑ 18% vs last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">⭐</div>
+        <div class="value">4.8</div>
+        <div class="label">Your Rating (32 reviews)</div>
+        <div class="change positive">↑ 0.2 this month</div>
+      </div>
+    </div>
+
+    <!-- Hot Leads Section -->
+    <div class="section">
+      <h2>
+        🔥 Hot Leads - Clients Ready to Hire
+        <span class="badge">12 Active</span>
+      </h2>
+      <div class="lead-grid">
+        <!-- Lead 1 -->
+        <div class="lead-card">
+          <div class="hot-badge">🔥 HOT</div>
+          <div class="header">
+            <div>
+              <h3>2BHK Interior Design - Mumbai</h3>
+              <p style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">Posted 2 hours ago</p>
+            </div>
+            <div class="budget">₹5.5L - ₹7L</div>
+          </div>
+          <div class="details">
+            <div>📍 Bandra West, Mumbai</div>
+            <div>📏 850 sq.ft</div>
+            <div>🛋️ Complete Interior</div>
+            <div>📅 Start: Feb 2026</div>
+          </div>
+          <div class="client-info">
+            <h4>Client Details</h4>
+            <p><strong>Name:</strong> Rahul Sharma (verified buyer)</p>
+            <p><strong>Property:</strong> Skyline Residency - Ready to Move</p>
+            <p><strong>Requirements:</strong> Modern minimalist style, wood work, modular kitchen, false ceiling</p>
+          </div>
+          <div class="auction-info">
+            <div>
+              <div class="timer">⏰ Closes in 4 hours 32 mins</div>
+              <div class="bidders">5 designers competing</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: bold; color: #f5576c;">Top 3 Selected</div>
+              <div style="font-size: 0.85rem; color: #666;">Client will shortlist 3</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary">Submit Proposal</button>
+            <button class="btn btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <!-- Lead 2 -->
+        <div class="lead-card">
+          <div class="hot-badge">⚡ URGENT</div>
+          <div class="header">
+            <div>
+              <h3>3BHK Renovation - Bengaluru</h3>
+              <p style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">Posted 1 day ago</p>
+            </div>
+            <div class="budget">₹8L - ₹10L</div>
+          </div>
+          <div class="details">
+            <div>📍 Whitefield, Bengaluru</div>
+            <div>📏 1,400 sq.ft</div>
+            <div>🛋️ Partial Renovation</div>
+            <div>📅 Start: Jan 2026</div>
+          </div>
+          <div class="client-info">
+            <h4>Client Details</h4>
+            <p><strong>Name:</strong> Priya Menon (verified buyer)</p>
+            <p><strong>Property:</strong> Green Valley Apartments</p>
+            <p><strong>Requirements:</strong> Living room + 2 bedrooms + kitchen (existing furniture reuse)</p>
+          </div>
+          <div class="auction-info">
+            <div>
+              <div class="timer">⏰ Closes in 18 hours</div>
+              <div class="bidders">8 designers competing</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: bold; color: #f5576c;">Top 3 Selected</div>
+              <div style="font-size: 0.85rem; color: #666;">Client will shortlist 3</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary">Submit Proposal</button>
+            <button class="btn btn-secondary">View Details</button>
+          </div>
+        </div>
+
+        <!-- Lead 3 -->
+        <div class="lead-card">
+          <div class="header">
+            <div>
+              <h3>Luxury Villa Interior - Pune</h3>
+              <p style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">Posted 3 days ago</p>
+            </div>
+            <div class="budget">₹35L - ₹40L</div>
+          </div>
+          <div class="details">
+            <div>📍 Koregaon Park, Pune</div>
+            <div>📏 3,500 sq.ft</div>
+            <div>🛋️ Full Villa Interior</div>
+            <div>📅 Start: Mar 2026</div>
+          </div>
+          <div class="client-info">
+            <h4>Client Details</h4>
+            <p><strong>Name:</strong> Amit Desai (verified buyer - repeat client)</p>
+            <p><strong>Property:</strong> Emerald Villas</p>
+            <p><strong>Requirements:</strong> High-end Italian marble, imported fixtures, smart home integration</p>
+          </div>
+          <div class="auction-info">
+            <div>
+              <div class="timer">⏰ Closes in 2 days</div>
+              <div class="bidders">12 designers competing</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: bold; color: #f5576c;">Top 5 Selected</div>
+              <div style="font-size: 0.85rem; color: #666;">High-value project</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary">Submit Proposal</button>
+            <button class="btn btn-secondary">View Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portfolio Section -->
+    <div class="section">
+      <h2>📸 Your Portfolio (24 Projects)</h2>
+      <div class="portfolio-grid">
+        <div class="portfolio-item">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect fill='%23f093fb' width='300' height='180'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3EModern Bedroom%3C/text%3E%3C/svg%3E" alt="Portfolio">
+          <div class="info">
+            <h4>Modern Minimalist Bedroom</h4>
+            <div class="meta">
+              <span>₹2.5L</span>
+              <span>⭐ 5.0</span>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-item">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect fill='%23f5576c' width='300' height='180'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3EModular Kitchen%3C/text%3E%3C/svg%3E" alt="Portfolio">
+          <div class="info">
+            <h4>Luxury Modular Kitchen</h4>
+            <div class="meta">
+              <span>₹4.2L</span>
+              <span>⭐ 4.9</span>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-item">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect fill='%2343a047' width='300' height='180'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3ELiving Room%3C/text%3E%3C/svg%3E" alt="Portfolio">
+          <div class="info">
+            <h4>Contemporary Living Room</h4>
+            <div class="meta">
+              <span>₹3.8L</span>
+              <span>⭐ 4.8</span>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-item">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Crect fill='%231e88e5' width='300' height='180'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3EEntire Home%3C/text%3E%3C/svg%3E" alt="Portfolio">
+          <div class="info">
+            <h4>Complete 3BHK Interior</h4>
+            <div class="meta">
+              <span>₹12L</span>
+              <span>⭐ 5.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating & Earnings -->
+    <div class="earnings-grid">
+      <!-- Rating Section -->
+      <div class="section">
+        <h2>⭐ Your Performance Rating</h2>
+        <div class="rating-card">
+          <div class="rating-header">
+            <div>
+              <div class="score">4.8</div>
+              <div style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Based on 32 completed projects</div>
+            </div>
+            <div class="stars">★★★★★</div>
+          </div>
+          <div class="rating-metrics">
+            <div class="metric">
+              <div class="label">Portfolio Quality</div>
+              <div class="bar"><div class="fill" style="width: 95%"></div></div>
+              <div class="score">9.5/10</div>
+            </div>
+            <div class="metric">
+              <div class="label">Timeline Adherence</div>
+              <div class="bar"><div class="fill" style="width: 88%"></div></div>
+              <div class="score">8.8/10</div>
+            </div>
+            <div class="metric">
+              <div class="label">Budget Adherence</div>
+              <div class="bar"><div class="fill" style="width: 82%"></div></div>
+              <div class="score">8.2/10</div>
+            </div>
+            <div class="metric">
+              <div class="label">Client Satisfaction</div>
+              <div class="bar"><div class="fill" style="width: 92%"></div></div>
+              <div class="score">9.2/10</div>
+            </div>
+            <div class="metric">
+              <div class="label">Post-Completion Support</div>
+              <div class="bar"><div class="fill" style="width: 78%"></div></div>
+              <div class="score">7.8/10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Earnings Section -->
+      <div class="section">
+        <h2>💰 This Month Earnings</h2>
+        <div class="earnings-summary">
+          <div class="earnings-item">
+            <div class="label">Total Invoiced</div>
+            <div class="amount">₹32.67L</div>
+          </div>
+          <div class="earnings-item">
+            <div class="label">Platform Commission (25%)</div>
+            <div class="amount" style="color: #f5576c;">- ₹8.17L</div>
+          </div>
+          <div class="earnings-item">
+            <div class="label">Your Earnings (75%)</div>
+            <div class="amount" style="font-size: 1.5rem; color: #4caf50;">₹24.5L</div>
+          </div>
+          <div class="earnings-item" style="background: #f5f5f5; margin: 1rem -1.5rem; padding: 1rem 1.5rem; border-radius: 8px;">
+            <div class="label">Payment Status</div>
+            <div>
+              <div style="font-weight: bold; color: #4caf50; margin-bottom: 0.5rem;">₹18.2L Paid</div>
+              <div style="font-size: 0.85rem; color: #666;">₹6.3L pending (due in 5 days)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Submit proposal simulation
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (e.target.textContent.includes('Submit Proposal')) {
+          alert('Proposal submission form:\n\n1. Upload portfolio images (3-5 images)\n2. Proposed timeline (in weeks)\n3. Estimated budget breakdown\n4. Your approach/design philosophy\n5. References (if any)\n\nTop 3 proposals will be shortlisted by client based on:\n- Portfolio quality (40%)\n- Timeline (25%)\n- Budget (20%)\n- Reviews/rating (15%)');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
