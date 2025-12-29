@@ -1,24 +1,28 @@
 # EstatelyticAI - Complete Vision & Business Model (FINALIZED)
-**Date:** December 28, 2025  
-**Status:** Ready for Implementation Phase 1 (Sales Platform)  
-**Next Phase:** Rental & Resale Framework
+**Date:** December 29, 2025  
+**Status:** Ready for Implementation - INDIA ONLY (Phase 1)  
+**Geographic Focus:** India (28 States + 8 UTs)  
+**Future Expansion:** UAE blueprint ready (separate document)
 
 ---
 
 ## 🎯 EXECUTIVE SUMMARY
 
-**Platform Positioning:** EstatelyticAI is the "shopping mall" - we market the platform, not individual projects. Developers are stores in our mall.
+**Platform Positioning:** EstatelyticAI is the "Operating System for Real Estate" - we're the infrastructure, not a marketplace. Think Salesforce for real estate.
 
-**Business Model:** Transaction-only, quality-based visibility (no pay-to-win), AI-powered marketplace connecting developers, channel partners, and buyers across India & UAE (global-ready).
+**Business Model:** Service-based subscriptions + transaction fees (NOT commission-sharing). Zero upfront fees, pay only on close.
 
 **Revenue Model:**
-- Developers: FREE listing + 3-4% commission on closed sales
-- Channel Partners: 0.5% platform fee on their generated leads
-- AI Services: ₹8K-2L per project (80-90% margins)
+- Developers: ₹30,000/project/month subscription (no tiers)
+- Channel Partners: ₹10,000/month subscription (no tiers)
+- Transaction fees: ₹500-2,000 per closed deal (rental/resale)
+- Lead fees: ₹500 connection, ₹2K-5K auctions, ₹100 notifications
 
-**Year 1 Target:** 200 developers, ₹34.2 Cr revenue (₹27 Cr commissions + ₹7.2 Cr services)
+**Year 1 Target:** 200 developers (400 projects), 500 partners, ₹31 Cr revenue
 
-**AI Auto-Learning:** Continuous improvement from all inputs, reducing human intervention from 20% to 5% over 24 months, increasing margins from 84% to 96%.
+**AI Auto-Learning:** Continuous improvement reducing human photo editing from 20% to 5% over 24 months, increasing margins from 84% to 96%.
+
+**Market Expansion Engine:** Partners can expand to multiple states (same ₹10K/month), developers access pan-India broker network.
 
 ---
 
