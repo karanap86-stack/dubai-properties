@@ -44,22 +44,33 @@
     Transparent • Tracked • Trusted
   </text>
   
-  <!-- Made in INDIA badge with India flag colors -->
+  <!-- Made in INDIA badge with India flag colors and Ashoka lions -->
   <g transform="translate(140, 210)">
     <!-- Badge background -->
-    <rect x="0" y="0" width="140" height="30" rx="15" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="0" y="0" width="160" height="30" rx="15" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
     
-    <!-- India flag tricolor accent (small stripe) -->
-    <rect x="8" y="8" width="3" height="14" fill="#FF9933" rx="1.5"/>
-    <rect x="12" y="8" width="3" height="14" fill="#ffffff" rx="1.5" stroke="#d1d5db" stroke-width="0.5"/>
-    <rect x="16" y="8" width="3" height="14" fill="#138808" rx="1.5"/>
+    <!-- Ashoka Lion Capital (simplified) -->
+    <g transform="translate(8, 8)">
+      <!-- Base pillar -->
+      <rect x="5" y="11" width="4" height="3" fill="#D4AF37" rx="0.5"/>
+      <!-- Lion body (simplified golden silhouette) -->
+      <path d="M 5 11 L 4 8 L 5 6 L 7 6 L 8 8 L 7 11 Z" fill="#D4AF37"/>
+      <path d="M 8 11 L 9 8 L 8 6 L 10 6 L 11 8 L 10 11 Z" fill="#D4AF37"/>
+      <!-- Lion heads -->
+      <circle cx="5.5" cy="6" r="1.2" fill="#B8860B"/>
+      <circle cx="9.5" cy="6" r="1.2" fill="#B8860B"/>
+      <!-- Ashoka Chakra on top -->
+      <circle cx="7" cy="4" r="2.5" fill="none" stroke="#000080" stroke-width="0.6"/>
+      <circle cx="7" cy="4" r="0.8" fill="#000080"/>
+    </g>
     
-    <!-- Ashoka Chakra mini icon -->
-    <circle cx="11.5" cy="15" r="6" fill="none" stroke="#000080" stroke-width="0.8"/>
-    <circle cx="11.5" cy="15" r="1.5" fill="#000080"/>
+    <!-- India flag tricolor accent -->
+    <rect x="23" y="8" width="3" height="14" fill="#FF9933" rx="1.5"/>
+    <rect x="27" y="8" width="3" height="14" fill="#ffffff" rx="1.5" stroke="#d1d5db" stroke-width="0.5"/>
+    <rect x="31" y="8" width="3" height="14" fill="#138808" rx="1.5"/>
     
     <!-- Made in INDIA text -->
-    <text x="28" y="20" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#1e293b">
+    <text x="43" y="20" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#1e293b">
       Made in <tspan fill="#FF9933">I</tspan><tspan fill="#000080">N</tspan><tspan fill="#138808">D</tspan><tspan fill="#FF9933">I</tspan><tspan fill="#000080">A</tspan>
     </text>
   </g>

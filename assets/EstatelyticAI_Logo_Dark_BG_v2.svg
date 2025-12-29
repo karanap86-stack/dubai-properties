@@ -37,15 +37,25 @@
     Transparent • Tracked • Trusted
   </text>
   
-  <!-- Made in INDIA badge (dark version) -->
+  <!-- Made in INDIA badge (dark version) with Ashoka lions -->
   <g transform="translate(140, 210)">
-    <rect x="0" y="0" width="140" height="30" rx="15" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
-    <rect x="8" y="8" width="3" height="14" fill="#FF9933" rx="1.5"/>
-    <rect x="12" y="8" width="3" height="14" fill="#ffffff" rx="1.5"/>
-    <rect x="16" y="8" width="3" height="14" fill="#138808" rx="1.5"/>
-    <circle cx="11.5" cy="15" r="6" fill="none" stroke="#60a5fa" stroke-width="0.8"/>
-    <circle cx="11.5" cy="15" r="1.5" fill="#60a5fa"/>
-    <text x="28" y="20" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">
+    <rect x="0" y="0" width="160" height="30" rx="15" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+    
+    <!-- Ashoka Lion Capital (golden for dark bg) -->
+    <g transform="translate(8, 8)">
+      <rect x="5" y="11" width="4" height="3" fill="#D4AF37" rx="0.5"/>
+      <path d="M 5 11 L 4 8 L 5 6 L 7 6 L 8 8 L 7 11 Z" fill="#D4AF37"/>
+      <path d="M 8 11 L 9 8 L 8 6 L 10 6 L 11 8 L 10 11 Z" fill="#D4AF37"/>
+      <circle cx="5.5" cy="6" r="1.2" fill="#FFD700"/>
+      <circle cx="9.5" cy="6" r="1.2" fill="#FFD700"/>
+      <circle cx="7" cy="4" r="2.5" fill="none" stroke="#60a5fa" stroke-width="0.6"/>
+      <circle cx="7" cy="4" r="0.8" fill="#60a5fa"/>
+    </g>
+    
+    <rect x="23" y="8" width="3" height="14" fill="#FF9933" rx="1.5"/>
+    <rect x="27" y="8" width="3" height="14" fill="#ffffff" rx="1.5"/>
+    <rect x="31" y="8" width="3" height="14" fill="#138808" rx="1.5"/>
+    <text x="43" y="20" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">
       Made in <tspan fill="#FF9933">I</tspan><tspan fill="#60a5fa">N</tspan><tspan fill="#4ade80">D</tspan><tspan fill="#FF9933">I</tspan><tspan fill="#60a5fa">A</tspan>
     </text>
   </g>
